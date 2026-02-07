@@ -43,8 +43,93 @@
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 50px;
             color: #d4af37;
+            position: relative;
+            padding-top: 40px;
+        }
+
+        /* Hanging chain */
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(180deg, #2d2d2d 0%, #1a1a1a 100%);
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Chain hook */
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #4a4a4a 0%, #2d2d2d 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header-sign {
+            background: linear-gradient(135deg, #5c4033 0%, #3d2817 50%, #2d1810 100%);
+            border: 3px solid #3d2817;
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(139,69,19,0.3),
+                inset 0 -2px 5px rgba(0,0,0,0.5);
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            transform-origin: top center;
+            animation: signSwing 3s ease-in-out infinite;
+        }
+
+        /* Wood grain texture */
+        .header-sign::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(0,0,0,0.1) 50px,
+                    rgba(0,0,0,0.1) 51px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(0,0,0,0.05) 8px,
+                    rgba(0,0,0,0.05) 9px
+                );
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        @keyframes signSwing {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(1deg);
+            }
+            75% {
+                transform: rotate(-1deg);
+            }
         }
 
         .header h1 {
@@ -53,6 +138,8 @@
             margin-bottom: 10px;
             font-weight: 700;
             letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
         }
 
         .header .title-mercy {
@@ -67,41 +154,101 @@
             opacity: 0.85;
             font-weight: 400;
             letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
         }
 
         .card {
-            background: linear-gradient(135deg, rgba(40,30,20,0.95) 0%, rgba(30,20,15,0.95) 100%);
+            background: 
+                linear-gradient(135deg, rgba(70,70,70,0.3) 0%, rgba(50,50,50,0.3) 100%),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(80,80,80,0.95),
+                    rgba(80,80,80,0.95) 30px,
+                    rgba(100,100,100,0.95) 30px,
+                    rgba(100,100,100,0.95) 33px,
+                    rgba(70,70,70,0.95) 33px,
+                    rgba(70,70,70,0.95) 35px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(90,90,90,0.95),
+                    rgba(90,90,90,0.95) 40px,
+                    rgba(110,110,110,0.95) 40px,
+                    rgba(110,110,110,0.95) 43px,
+                    rgba(80,80,80,0.95) 43px,
+                    rgba(80,80,80,0.95) 45px
+                );
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 1px 1px rgba(212,175,55,0.1);
-            border: 2px solid rgba(139,69,19,0.5);
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.8), 
+                inset 0 2px 4px rgba(0,0,0,0.6),
+                inset 2px 2px 8px rgba(0,0,0,0.4);
+            border: 3px solid rgba(60,60,60,0.8);
+            position: relative;
+        }
+
+        /* Stone texture overlay */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(120,120,120,0.3) 0%, transparent 3%),
+                radial-gradient(circle at 60% 70%, rgba(100,100,100,0.3) 0%, transparent 4%),
+                radial-gradient(circle at 80% 20%, rgba(110,110,110,0.3) 0%, transparent 3%),
+                radial-gradient(circle at 30% 80%, rgba(90,90,90,0.3) 0%, transparent 4%);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        /* Stone cracks */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(135deg, transparent 48%, rgba(40,40,40,0.6) 49%, rgba(40,40,40,0.6) 51%, transparent 52%),
+                linear-gradient(45deg, transparent 70%, rgba(40,40,40,0.4) 71%, rgba(40,40,40,0.4) 72%, transparent 73%);
+            border-radius: 15px;
+            pointer-events: none;
         }
 
         .tabs {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .tab {
             padding: 15px 30px;
-            border: 2px solid rgba(139,69,19,0.7);
+            border: 2px solid rgba(60,60,60,0.9);
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(60,40,20,0.8) 0%, rgba(40,30,15,0.8) 100%);
+            background: linear-gradient(135deg, rgba(90,90,90,0.9) 0%, rgba(70,70,70,0.9) 100%);
             color: #d4af37;
             cursor: pointer;
             font-size: 1em;
             font-weight: 600;
             transition: all 0.3s;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            box-shadow: inset 0 1px 1px rgba(212,175,55,0.1);
+            box-shadow: inset 0 1px 1px rgba(120,120,120,0.2), 0 4px 6px rgba(0,0,0,0.5);
+            position: relative;
         }
 
         .tab:hover {
-            background: linear-gradient(135deg, rgba(80,50,25,0.9) 0%, rgba(60,40,20,0.9) 100%);
+            background: linear-gradient(135deg, rgba(110,110,110,0.95) 0%, rgba(90,90,90,0.95) 100%);
             border-color: rgba(212,175,55,0.6);
-            box-shadow: 0 0 10px rgba(212,175,55,0.3);
+            box-shadow: 0 0 10px rgba(212,175,55,0.3), inset 0 1px 1px rgba(120,120,120,0.3);
         }
 
         .tab.active {
@@ -113,6 +260,8 @@
 
         .tab-content {
             display: none;
+            position: relative;
+            z-index: 1;
         }
 
         .tab-content.active {
@@ -122,6 +271,7 @@
         .input-group {
             margin-bottom: 20px;
             position: relative;
+            z-index: 1;
         }
 
         .input-group label {
@@ -293,20 +443,20 @@
         .input-group input {
             width: 100%;
             padding: 12px;
-            border: 2px solid rgba(139,69,19,0.7);
+            border: 2px solid rgba(60,60,60,0.9);
             border-radius: 8px;
             font-size: 1em;
             transition: border-color 0.3s, box-shadow 0.3s;
-            background: rgba(20,15,10,0.6);
+            background: rgba(20,15,10,0.8);
             color: #d4af37;
             font-family: 'Cinzel', serif;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
         }
 
         .input-group input:focus {
             outline: none;
             border-color: #d4af37;
-            box-shadow: 0 0 10px rgba(212,175,55,0.3), inset 0 2px 4px rgba(0,0,0,0.5);
+            box-shadow: 0 0 10px rgba(212,175,55,0.3), inset 0 2px 4px rgba(0,0,0,0.7);
         }
 
         .input-group input::placeholder {
@@ -315,6 +465,8 @@
 
         .checkbox-group {
             margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
 
         .checkbox-group label {
@@ -348,6 +500,8 @@
             font-family: 'Cinzel', serif;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(212,175,55,0.2);
+            position: relative;
+            z-index: 1;
         }
 
         .btn:hover {
@@ -370,11 +524,13 @@
         .results {
             margin-top: 30px;
             padding: 20px;
-            background: linear-gradient(135deg, rgba(30,20,10,0.8) 0%, rgba(20,15,10,0.8) 100%);
+            background: linear-gradient(135deg, rgba(30,20,10,0.9) 0%, rgba(20,15,10,0.9) 100%);
             border-radius: 10px;
             display: none;
             border: 2px solid rgba(139,69,19,0.5);
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
         }
 
         .results.show {
@@ -599,13 +755,33 @@
             font-weight: 700;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 10px rgba(139,0,0,0.5);
         }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .header p {
+                font-size: 0.9em;
+            }
+            
+            .header-sign {
+                padding: 20px 25px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>✨💀 PLEASE <span class="title-mercy">Mercy</span> 💀✨</h1>
-            <p>Check your odds of pulling Mercy! (So you can still curse your luck but now more accurately ✨)</p>
+            <div class="header-sign">
+                <h1>✨💀 PLEASE <span class="title-mercy">Mercy</span> 💀✨</h1>
+                <p>Check your odds of pulling Mercy! (So you can still curse your luck but now more accurately ✨)</p>
+            </div>
         </div>
 
         <div class="card">
@@ -1109,7 +1285,7 @@
             const useBoosters = document.getElementById('single-booster').checked;
             const dramaticMode = document.getElementById('dramatic-mode').checked;
             const pityValue = parseInt(document.getElementById('single-pity').value);
-            const initialPity = Math.max(1, Math.min(90, pityValue)) - 1; // Convert "pulls until pity" to pity counter (90 - pity counter)
+            const initialPity = Math.max(1, Math.min(90, pityValue)) - 1;
             const resultsDiv = document.getElementById('results');
 
             if (dramaticMode) {
@@ -1161,7 +1337,6 @@
                 let mercyIsBoosted = false;
                 const allPulls = [];
 
-                // Pre-calculate all pulls
                 while (totalDraws < maxDraws) {
                     const batchPulls = [];
                     const batchSize = Math.min(10, maxDraws - totalDraws);
@@ -1232,7 +1407,6 @@
                     });
                 }
 
-                // Display with dramatic effect
                 let html = '<h3>🎲 Dramatic Reveal</h3>';
                 html += '<div class="dramatic-progress">';
                 html += '<div class="progress-text">Revealing pulls...</div>';
@@ -1252,7 +1426,6 @@
                     if (currentBatch >= allPulls.length) {
                         clearInterval(revealInterval);
                         
-                        // Show final stats
                         let statsHtml = '<div class="stats" style="margin-top: 30px;">';
                         statsHtml += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
                         statsHtml += `<div class="stat-card"><div class="label">⭐ Mercy</div><div class="value">${mercyCount}</div></div>`;
