@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLEASE Mercy</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1b00 50%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('BG.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #d4af37;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(212,175,55,0.3);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .header .title-mercy {
+            font-family: 'Creepster', cursive;
+            color: #8B0000;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9), 0 0 20px rgba(139,0,0,0.6), 0 0 40px rgba(255,0,0,0.3);
+            filter: drop-shadow(0 5px 3px rgba(139,0,0,0.4));
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.85;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(40,30,20,0.95) 0%, rgba(30,20,15,0.95) 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6), inset 0 1px 1px rgba(212,175,55,0.1);
+            border: 2px solid rgba(139,69,19,0.5);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            border: 2px solid rgba(139,69,19,0.7);
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(60,40,20,0.8) 0%, rgba(40,30,15,0.8) 100%);
+            color: #d4af37;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 1px 1px rgba(212,175,55,0.1);
+        }
+
+        .tab:hover {
+            background: linear-gradient(135deg, rgba(80,50,25,0.9) 0%, rgba(60,40,20,0.9) 100%);
+            border-color: rgba(212,175,55,0.6);
+            box-shadow: 0 0 10px rgba(212,175,55,0.3);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, rgba(139,69,19,0.9) 0%, rgba(101,67,33,0.9) 100%);
+            color: #ffd700;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212,175,55,0.4), inset 0 1px 1px rgba(255,215,0,0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #d4af37;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B4513 0%, #654321 100%);
+            color: #ffd700;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid rgba(212,175,55,0.5);
+            transition: all 0.2s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .info-btn:hover {
+            background: linear-gradient(135deg, #A0522D 0%, #8B4513 100%);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(212,175,55,0.5);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20,15,10,0.95);
+            color: #d4af37;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            margin-bottom: 5px;
+            border: 1px solid rgba(139,69,19,0.7);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(20,15,10,0.95);
+        }
+
+        .info-btn:hover .tooltip {
+            opacity: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(40,30,20,0.98) 0%, rgba(30,20,15,0.98) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s;
+            border: 2px solid rgba(139,69,19,0.7);
+            box-shadow: 0 0 30px rgba(212,175,55,0.2), inset 0 1px 1px rgba(212,175,55,0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(139,69,19,0.7);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h3 {
+            color: #ffd700;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: #d4af37;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .close-btn:hover {
+            color: #ffd700;
+        }
+
+        .modal-body {
+            color: #d4af37;
+            line-height: 1.6;
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+
+        .modal-body strong {
+            color: #ffd700;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(139,69,19,0.7);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(20,15,10,0.6);
+            color: #d4af37;
+            font-family: 'Cinzel', serif;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212,175,55,0.3), inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(212,175,55,0.5);
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #d4af37;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #8B4513;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: 2px solid rgba(139,69,19,0.8);
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(139,69,19,0.9) 0%, rgba(101,67,33,0.9) 100%);
+            color: #ffd700;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: 'Cinzel', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(212,175,55,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(160,82,45,0.95) 0%, rgba(139,69,19,0.95) 100%);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 15px rgba(212,175,55,0.3);
+            border-color: #d4af37;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(30,20,10,0.8) 0%, rgba(20,15,10,0.8) 100%);
+            border-radius: 10px;
+            display: none;
+            border: 2px solid rgba(139,69,19,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h3 {
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .results-summary {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(255,215,0,0.4);
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(139,69,19,0.5) 0%, rgba(101,67,33,0.5) 100%);
+            border-radius: 8px;
+            border: 2px solid rgba(212,175,55,0.6);
+            text-align: center;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(40,30,20,0.6);
+            border-radius: 8px;
+            border-left: 4px solid #8B4513;
+            color: #d4af37;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .result-item.mercy {
+            border-left-color: #8B0000;
+            background: rgba(60,20,20,0.5);
+            color: #ffcccc;
+        }
+
+        .result-item.boosted {
+            border-left-color: #ffd700;
+            background: rgba(60,50,20,0.5);
+            color: #ffd700;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(40,30,20,0.7) 0%, rgba(30,20,15,0.7) 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(139,69,19,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(212,175,55,0.1);
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #d4af37;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .bar-graph {
+            margin-top: 20px;
+        }
+
+        .bar-item {
+            margin-bottom: 10px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #d4af37;
+        }
+
+        .bar-container {
+            height: 25px;
+            background: rgba(20,15,10,0.6);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(139,69,19,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(139,69,19,0.9) 0%, rgba(212,175,55,0.8) 50%, rgba(139,69,19,0.9) 100%);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: #ffd700;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 1px 1px rgba(255,215,0,0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #ffd700;
+        }
+
+        .spinner {
+            border: 4px solid rgba(139,69,19,0.3);
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .dramatic-progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: rgba(20,15,10,0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(139,69,19,0.7);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8B4513 0%, #d4af37 50%, #8B4513 100%);
+            width: 0%;
+            transition: width 1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffd700;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+            box-shadow: inset 0 1px 1px rgba(255,215,0,0.3);
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #d4af37;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .dramatic-pulls {
+            margin-top: 20px;
+        }
+
+        .pull-batch {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(40,30,20,0.6);
+            border-radius: 8px;
+            border-left: 4px solid #8B4513;
+            color: #d4af37;
+            animation: fadeIn 0.5s;
+        }
+
+        .pull-batch.legendary {
+            border-left-color: #ffd700;
+            background: rgba(60,50,20,0.6);
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+
+        .pull-batch.mercy-pull {
+            border-left-color: #8B0000;
+            background: rgba(60,20,20,0.6);
+            box-shadow: 0 0 15px rgba(139,0,0,0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .legendary-text {
+            color: #ffd700;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        .mercy-text {
+            color: #ff6666;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 10px rgba(139,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✨💀 PLEASE <span class="title-mercy">Mercy</span> 💀✨</h1>
+            <p>Check your odds of pulling Mercy! (So you can still curse your luck but now more accurately ✨)</p>
+        </div>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('single')">Single Simulation</button>
+                <button class="tab" onclick="switchTab('multiple')">Multiple Runs</button>
+                <button class="tab" onclick="switchTab('probability')">Probability Check</button>
+            </div>
+
+            <!-- Single Simulation Tab -->
+            <div id="single-tab" class="tab-content active">
+                <div class="input-group">
+                    <label>
+                        Number of Draws
+                        <button class="info-btn" onclick="showModal('draws')">?
+                            <span class="tooltip">How many pulls to simulate</span>
+                        </button>
+                    </label>
+                    <input type="number" id="single-draws" value="100" min="1">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Pulls Until Pity
+                        <button class="info-btn" onclick="showModal('pity')">?
+                            <span class="tooltip">How close you are to pity</span>
+                        </button>
+                    </label>
+                    <input type="number" id="single-pity" value="90" min="1" max="90">
+                </div>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="single-booster">
+                        Use boosters from start
+                        <button class="info-btn" onclick="showModal('booster')">?
+                            <span class="tooltip">Enable boosted rates from the start</span>
+                        </button>
+                    </label>
+                </div>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="dramatic-mode">
+                        Dramatic Mode (Slow Reveal)
+                        <button class="info-btn" onclick="showModal('dramatic')">?
+                            <span class="tooltip">Reveals pulls slowly for suspense</span>
+                        </button>
+                    </label>
+                </div>
+                <button class="btn" onclick="runSingleSimulation()">Run Simulation</button>
+            </div>
+
+            <!-- Multiple Runs Tab -->
+            <div id="multiple-tab" class="tab-content">
+                <div class="input-group">
+                    <label>
+                        Target Mercy Copies
+                        <button class="info-btn" onclick="showModal('target')">?
+                            <span class="tooltip">How many Mercy copies to aim for</span>
+                        </button>
+                    </label>
+                    <input type="number" id="target-copies" value="1" min="1">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Number of Runs
+                        <button class="info-btn" onclick="showModal('runs')">?
+                            <span class="tooltip">How many simulations to run</span>
+                        </button>
+                    </label>
+                    <input type="number" id="num-runs" value="1000" min="1">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Pulls Until Pity
+                        <button class="info-btn" onclick="showModal('pity')">?
+                            <span class="tooltip">How close you are to pity</span>
+                        </button>
+                    </label>
+                    <input type="number" id="multiple-pity" value="90" min="1" max="90">
+                </div>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="multiple-booster">
+                        Use boosters from start
+                        <button class="info-btn" onclick="showModal('booster')">?
+                            <span class="tooltip">Enable boosted rates from the start</span>
+                        </button>
+                    </label>
+                </div>
+                <button class="btn" onclick="runMultipleSimulation()">Run Multiple Simulations</button>
+            </div>
+
+            <!-- Probability Check Tab -->
+            <div id="probability-tab" class="tab-content">
+                <div class="input-group">
+                    <label>
+                        Maximum Draws
+                        <button class="info-btn" onclick="showModal('maxdraws')">?
+                            <span class="tooltip">Maximum number of pulls to simulate</span>
+                        </button>
+                    </label>
+                    <input type="number" id="prob-draws" value="100" min="1">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Number of Runs (more = more accurate)
+                        <button class="info-btn" onclick="showModal('probruns')">?
+                            <span class="tooltip">More runs = more accurate results</span>
+                        </button>
+                    </label>
+                    <input type="number" id="prob-runs" value="100000" min="1000">
+                </div>
+                <div class="input-group">
+                    <label>
+                        Pulls Until Pity
+                        <button class="info-btn" onclick="showModal('pity')">?
+                            <span class="tooltip">How close you are to pity</span>
+                        </button>
+                    </label>
+                    <input type="number" id="prob-pity" value="90" min="1" max="90">
+                </div>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="prob-booster">
+                        Use boosters from start
+                        <button class="info-btn" onclick="showModal('booster')">?
+                            <span class="tooltip">Enable boosted rates from the start</span>
+                        </button>
+                    </label>
+                </div>
+                <button class="btn" onclick="runProbabilityCheck()">Calculate Probabilities</button>
+            </div>
+
+            <div id="results" class="results"></div>
+        </div>
+
+        <!-- Modal -->
+        <div id="infoModal" class="modal" onclick="closeModalOutside(event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Information</h3>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MERCY_RATE_WHEN_NOT_BOOSTED = 0.5 / 14;
+
+        const infoContent = {
+            'draws': {
+                title: 'Number of Draws',
+                content: `
+                    <p><strong>What it does:</strong> Sets how many gacha pulls to simulate in a single run.</p>
+                    <p><strong>How it works:</strong> The simulator will perform this many pulls and show you what you got, including all legendary drops and their types (Mercy, Boosted, or Other).</p>
+                    <p><strong>Typical values:</strong></p>
+                    <ul>
+                        <li>50-100 draws: Quick test to see short-term luck</li>
+                        <li>200-300 draws: Medium-term analysis</li>
+                        <li>500+ draws: Long-term probability analysis</li>
+                    </ul>
+                    <p><strong>Note:</strong> Each legendary has a 1% base chance per pull, with guaranteed legendary at 90 pulls (pity system).</p>
+                `
+            },
+            'booster': {
+                title: 'Use Boosters From Start',
+                content: `
+                    <p><strong>What it does:</strong> Changes the probability distribution when enabled.</p>
+                    <p><strong>When DISABLED (default):</strong></p>
+                    <ul>
+                        <li>Legendary drops are 50% Boosted hero, 50% other heroes</li>
+                        <li>Within the "other" 50%, there's a ${((0.5/14) * 100).toFixed(2)}% chance for Mercy (0.5/14)</li>
+                        <li>After getting 2 Boosted copies, Mercy rate increases to 50%</li>
+                    </ul>
+                    <p><strong>When ENABLED:</strong></p>
+                    <ul>
+                        <li>Legendary drops are 12.5% Mercy, 37.5% Boosted, 50% Other</li>
+                        <li>Uses a booster resource with each legendary pull</li>
+                        <li>Better early Mercy chances but costs boosters</li>
+                    </ul>
+                `
+            },
+            'target': {
+                title: 'Target Mercy Copies',
+                content: `
+                    <p><strong>What it does:</strong> Sets how many copies of Mercy you want to obtain.</p>
+                    <p><strong>How it works:</strong> The simulation will continue pulling until it gets this many Mercy copies, then record how many total draws it took.</p>
+                    <p><strong>Use cases:</strong></p>
+                    <ul>
+                        <li>1 copy: Get Mercy once (unlock the character)</li>
+                        <li>2-6 copies: Duplication/constellation system</li>
+                        <li>7+ copies: Max constellation/limit break</li>
+                    </ul>
+                    <p><strong>Note:</strong> Higher copy counts will require significantly more draws on average.</p>
+                `
+            },
+            'runs': {
+                title: 'Number of Runs',
+                content: `
+                    <p><strong>What it does:</strong> Runs multiple independent simulations and shows average statistics.</p>
+                    <p><strong>How it works:</strong> Each run simulates getting your target Mercy copies and records the draw count. Results show the average, median, minimum, and maximum draws needed.</p>
+                    <p><strong>Recommended values:</strong></p>
+                    <ul>
+                        <li>100-500 runs: Quick estimate</li>
+                        <li>1,000 runs: Good balance of speed and accuracy</li>
+                        <li>10,000+ runs: Very accurate statistical analysis</li>
+                    </ul>
+                    <p><strong>Why it matters:</strong> More runs = more reliable average. Gacha is random, so individual results vary widely!</p>
+                `
+            },
+            'maxdraws': {
+                title: 'Maximum Draws',
+                content: `
+                    <p><strong>What it does:</strong> Sets a fixed number of draws for probability analysis.</p>
+                    <p><strong>How it works:</strong> Each simulation performs exactly this many draws, then counts how many Mercy copies were obtained. This is repeated many times to calculate the probability of getting 0, 1, 2, 3... Mercy copies.</p>
+                    <p><strong>Common scenarios:</strong></p>
+                    <ul>
+                        <li>90 draws: One pity cycle worth</li>
+                        <li>180 draws: Two pity cycles</li>
+                        <li>270-360 draws: Multiple pity cycles for constellation analysis</li>
+                    </ul>
+                    <p><strong>Use this to answer:</strong> "If I do exactly X pulls, what are my chances of getting Y Mercy copies?"</p>
+                `
+            },
+            'probruns': {
+                title: 'Number of Runs (Probability)',
+                content: `
+                    <p><strong>What it does:</strong> How many times to simulate the draw sequence for probability calculation.</p>
+                    <p><strong>How it works:</strong> More runs = more accurate probability percentages. The simulator runs the same scenario thousands of times to calculate how likely each outcome is.</p>
+                    <p><strong>Recommended values:</strong></p>
+                    <ul>
+                        <li>10,000 runs: Fast but less accurate</li>
+                        <li>100,000 runs: Good balance (default)</li>
+                        <li>300,000+ runs: Maximum accuracy (slower)</li>
+                    </ul>
+                    <p><strong>Example:</strong> With 100,000 runs, if you get Mercy 2,500 times, that's a 2.5% chance.</p>
+                `
+            },
+            'dramatic': {
+                title: 'Dramatic Mode',
+                content: `
+                    <p><strong>What it does:</strong> Reveals your gacha pulls slowly in batches of 10 for dramatic tension and suspense!</p>
+                    <p><strong>How it works:</strong> Instead of showing all results instantly, the simulator will:</p>
+                    <ul>
+                        <li>Process pulls in groups of 10</li>
+                        <li>Show a progress bar that fills over 1 second per batch</li>
+                        <li>Display what happened in each batch (Nothing, or Legendary drop)</li>
+                        <li>Highlight legendary drops with special effects</li>
+                        <li>Show Mercy drops with blood-red highlighting</li>
+                    </ul>
+                    <p><strong>Note:</strong> This mode is slower but more exciting! Great for smaller pull counts (under 200).</p>
+                `
+            },
+            'pity': {
+                title: 'Pulls Until Pity',
+                content: `
+                    <p><strong>What it does:</strong> Sets how many pulls you are away from guaranteed pity (forced legendary).</p>
+                    <p><strong>How it works:</strong> In this gacha system, you're guaranteed a legendary drop at 90 pulls if you haven't gotten one yet. This counter starts at your current pity progress.</p>
+                    <p><strong>Examples:</strong></p>
+                    <ul>
+                        <li>90 pulls = Fresh start, no pity progress</li>
+                        <li>50 pulls = You're 40 pulls into pity</li>
+                        <li>10 pulls = You're 80 pulls into pity (very close!)</li>
+                        <li>1 pull = Next pull is guaranteed legendary</li>
+                    </ul>
+                    <p><strong>Why it matters:</strong> Being closer to pity means you're more likely to get a legendary sooner, which affects your overall chances of getting Mercy within a certain number of pulls.</p>
+                    <p><strong>Range:</strong> Must be between 1 and 90 pulls.</p>
+                `
+            }
+        };
+
+        function showModal(type) {
+            const modal = document.getElementById('infoModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            
+            if (infoContent[type]) {
+                title.textContent = infoContent[type].title;
+                body.innerHTML = infoContent[type].content;
+                modal.classList.add('show');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('show');
+        }
+
+        function closeModalOutside(event) {
+            if (event.target.id === 'infoModal') {
+                closeModal();
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.getElementById('results').classList.remove('show');
+        }
+
+        function simulateSingle(maxDraws, useBoosters, initialPity = 0) {
+            let totalDraws = 0;
+            let pity = initialPity;
+            let mercyCount = 0;
+            let boostedCount = 0;
+            let otherCount = 0;
+            let boostersUsed = 0;
+            let mercyIsBoosted = false;
+            const results = [];
+
+            while (totalDraws < maxDraws) {
+                totalDraws++;
+                pity++;
+
+                const gotLegendary = Math.random() < 0.01 || pity >= 90;
+
+                if (gotLegendary) {
+                    pity = 0;
+
+                    if (mercyIsBoosted) {
+                        boostersUsed++;
+                        if (Math.random() < 0.5) {
+                            results.push({ type: 'mercy', draws: totalDraws });
+                            mercyCount++;
+                        } else {
+                            results.push({ type: 'other', draws: totalDraws });
+                            otherCount++;
+                        }
+                    } else {
+                        if (useBoosters) {
+                            boostersUsed++;
+                            const rand = Math.random();
+                            if (rand < 0.25) {
+                                results.push({ type: 'mercy', draws: totalDraws });
+                                mercyCount++;
+                            } else if (rand < 1.0) {
+                                results.push({ type: 'boosted', draws: totalDraws });
+                                boostedCount++;
+                                if (boostedCount === 2) {
+                                    mercyIsBoosted = true;
+                                }
+                            } else {
+                                results.push({ type: 'other', draws: totalDraws });
+                                otherCount++;
+                            }
+                        } else {
+                            if (Math.random() < 0.5) {
+                                results.push({ type: 'boosted', draws: totalDraws });
+                                boostedCount++;
+                                if (boostedCount === 2) {
+                                    mercyIsBoosted = true;
+                                }
+                            } else {
+                                if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) {
+                                    results.push({ type: 'mercy', draws: totalDraws });
+                                    mercyCount++;
+                                } else {
+                                    results.push({ type: 'other', draws: totalDraws });
+                                    otherCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return { results, totalDraws, mercyCount, boostedCount, otherCount, boostersUsed };
+        }
+
+        function simulateMultiple(targetCopies, numRuns, useBoosters, initialPity = 0) {
+            const results = [];
+
+            for (let run = 0; run < numRuns; run++) {
+                let totalDraws = 0;
+                let pity = initialPity;
+                let mercyCount = 0;
+                let boostedCount = 0;
+                let mercyIsBoosted = false;
+
+                while (mercyCount < targetCopies) {
+                    totalDraws++;
+                    pity++;
+
+                    const gotLegendary = Math.random() < 0.01 || pity >= 90;
+
+                    if (gotLegendary) {
+                        pity = 0;
+
+                        if (mercyIsBoosted) {
+                            if (Math.random() < 0.5) {
+                                mercyCount++;
+                            }
+                        } else {
+                            if (useBoosters) {
+                                const rand = Math.random();
+                                if (rand < 0.25) {
+                                    mercyCount++;
+                                } else if (rand < 1.0) {
+                                    boostedCount++;
+                                    if (boostedCount === 2) {
+                                        mercyIsBoosted = true;
+                                    }
+                                }
+                            } else {
+                                if (Math.random() < 0.5) {
+                                    boostedCount++;
+                                    if (boostedCount === 2) {
+                                        mercyIsBoosted = true;
+                                    }
+                                } else {
+                                    if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) {
+                                        mercyCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                results.push(totalDraws);
+            }
+
+            results.sort((a, b) => a - b);
+            const avg = results.reduce((a, b) => a + b, 0) / results.length;
+            const median = results[Math.floor(results.length / 2)];
+            const min = results[0];
+            const max = results[results.length - 1];
+
+            return { avg, median, min, max };
+        }
+
+        function probabilityCheck(maxDraws, numRuns, useBoosters, initialPity = 0) {
+            const mercyCounts = {};
+            let totalBoosters = 0;
+            let totalMercy = 0;
+
+            for (let run = 0; run < numRuns; run++) {
+                let totalDraws = 0;
+                let pity = initialPity;
+                let mercyCount = 0;
+                let boostedCount = 0;
+                let boostersUsed = 0;
+                let mercyIsBoosted = false;
+
+                while (totalDraws < maxDraws) {
+                    totalDraws++;
+                    pity++;
+
+                    const gotLegendary = Math.random() < 0.01 || pity >= 90;
+
+                    if (gotLegendary) {
+                        pity = 0;
+
+                        if (mercyIsBoosted) {
+                            boostersUsed++;
+                            if (Math.random() < 0.5) {
+                                mercyCount++;
+                            }
+                        } else {
+                            if (useBoosters) {
+                                boostersUsed++;
+                                const rand = Math.random();
+                                if (rand < 0.25) {
+                                    mercyCount++;
+                                } else if (rand < 1.0) {
+                                    boostedCount++;
+                                    if (boostedCount === 2) {
+                                        mercyIsBoosted = true;
+                                    }
+                                }
+                            } else {
+                                if (Math.random() < 0.5) {
+                                    boostedCount++;
+                                    if (boostedCount === 2) {
+                                        mercyIsBoosted = true;
+                                    }
+                                } else {
+                                    if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) {
+                                        mercyCount++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                mercyCounts[mercyCount] = (mercyCounts[mercyCount] || 0) + 1;
+                totalBoosters += boostersUsed;
+                totalMercy += mercyCount;
+            }
+
+            return { mercyCounts, totalBoosters, totalMercy };
+        }
+
+        function runSingleSimulation() {
+            const draws = parseInt(document.getElementById('single-draws').value);
+            const useBoosters = document.getElementById('single-booster').checked;
+            const dramaticMode = document.getElementById('dramatic-mode').checked;
+            const pityValue = parseInt(document.getElementById('single-pity').value);
+            const initialPity = Math.max(1, Math.min(90, pityValue)) - 1; // Convert "pulls until pity" to pity counter (90 - pity counter)
+            const resultsDiv = document.getElementById('results');
+
+            if (dramaticMode) {
+                runDramaticSimulation(draws, useBoosters, 90 - initialPity - 1);
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Running simulation...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const { results, totalDraws, mercyCount, boostedCount, otherCount, boostersUsed } = simulateSingle(draws, useBoosters, 90 - initialPity - 1);
+
+                let html = '<h3>📊 Simulation Results</h3>';
+                html += '<div class="stats">';
+                html += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
+                html += `<div class="stat-card"><div class="label">⭐ Mercy</div><div class="value">${mercyCount}</div></div>`;
+                html += `<div class="stat-card"><div class="label">🔥 Boosted</div><div class="value">${boostedCount}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Other</div><div class="value">${otherCount}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Boosters Used</div><div class="value">${boostersUsed}</div></div>`;
+                html += '</div>';
+
+                html += '<h3 style="margin-top: 30px;">Pull History</h3>';
+                let boostedLegendaryCount = 0;
+                results.forEach((r, i) => {
+                    const typeName = { mercy: '⭐ MERCY', boosted: '🔥 BOOSTED', other: 'Other' }[r.type];
+                    if (r.type === 'boosted') boostedLegendaryCount++;
+                    const boostMsg = (r.type === 'boosted' && boostedLegendaryCount === 2) ? ' (Mercy now boosted!)' : '';
+                    const className = r.type;
+                    html += `<div class="result-item ${className}">#${i + 1}: ${typeName}${boostMsg} - Total draws: ${r.draws}</div>`;
+                });
+
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+
+        function runDramaticSimulation(maxDraws, useBoosters, initialPity = 0) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Preparing dramatic reveal...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                let totalDraws = 0;
+                let pity = initialPity;
+                let mercyCount = 0;
+                let boostedCount = 0;
+                let otherCount = 0;
+                let boostersUsed = 0;
+                let mercyIsBoosted = false;
+                const allPulls = [];
+
+                // Pre-calculate all pulls
+                while (totalDraws < maxDraws) {
+                    const batchPulls = [];
+                    const batchSize = Math.min(10, maxDraws - totalDraws);
+
+                    for (let i = 0; i < batchSize; i++) {
+                        totalDraws++;
+                        pity++;
+
+                        const gotLegendary = Math.random() < 0.01 || pity >= 90;
+
+                        if (gotLegendary) {
+                            pity = 0;
+                            let legendaryType = '';
+
+                            if (mercyIsBoosted) {
+                                boostersUsed++;
+                                if (Math.random() < 0.5) {
+                                    legendaryType = 'mercy';
+                                    mercyCount++;
+                                } else {
+                                    legendaryType = 'other';
+                                    otherCount++;
+                                }
+                            } else {
+                                if (useBoosters) {
+                                    boostersUsed++;
+                                    const rand = Math.random();
+                                    if (rand < 0.25) {
+                                        legendaryType = 'mercy';
+                                        mercyCount++;
+                                    } else if (rand < 1.0) {
+                                        legendaryType = 'boosted';
+                                        boostedCount++;
+                                        if (boostedCount === 2) {
+                                            mercyIsBoosted = true;
+                                        }
+                                    } else {
+                                        legendaryType = 'other';
+                                        otherCount++;
+                                    }
+                                } else {
+                                    if (Math.random() < 0.5) {
+                                        legendaryType = 'boosted';
+                                        boostedCount++;
+                                        if (boostedCount === 2) {
+                                            mercyIsBoosted = true;
+                                        }
+                                    } else {
+                                        if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) {
+                                            legendaryType = 'mercy';
+                                            mercyCount++;
+                                        } else {
+                                            legendaryType = 'other';
+                                            otherCount++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            batchPulls.push({ pull: totalDraws, type: legendaryType });
+                        }
+                    }
+
+                    allPulls.push({
+                        start: totalDraws - batchSize + 1,
+                        end: totalDraws,
+                        legendaries: batchPulls
+                    });
+                }
+
+                // Display with dramatic effect
+                let html = '<h3>🎲 Dramatic Reveal</h3>';
+                html += '<div class="dramatic-progress">';
+                html += '<div class="progress-text">Revealing pulls...</div>';
+                html += '<div class="progress-bar-container">';
+                html += '<div class="progress-bar-fill" id="dramaticProgress">0%</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '<div class="dramatic-pulls" id="dramaticPulls"></div>';
+
+                resultsDiv.innerHTML = html;
+
+                let currentBatch = 0;
+                const progressBar = document.getElementById('dramaticProgress');
+                const pullsDiv = document.getElementById('dramaticPulls');
+
+                const revealInterval = setInterval(() => {
+                    if (currentBatch >= allPulls.length) {
+                        clearInterval(revealInterval);
+                        
+                        // Show final stats
+                        let statsHtml = '<div class="stats" style="margin-top: 30px;">';
+                        statsHtml += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
+                        statsHtml += `<div class="stat-card"><div class="label">⭐ Mercy</div><div class="value">${mercyCount}</div></div>`;
+                        statsHtml += `<div class="stat-card"><div class="label">🔥 Boosted</div><div class="value">${boostedCount}</div></div>`;
+                        statsHtml += `<div class="stat-card"><div class="label">Other</div><div class="value">${otherCount}</div></div>`;
+                        statsHtml += `<div class="stat-card"><div class="label">Boosters Used</div><div class="value">${boostersUsed}</div></div>`;
+                        statsHtml += '</div>';
+                        pullsDiv.insertAdjacentHTML('beforeend', statsHtml);
+                        return;
+                    }
+
+                    const batch = allPulls[currentBatch];
+                    const progress = ((currentBatch + 1) / allPulls.length * 100).toFixed(0);
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = progress + '%';
+
+                    let batchHtml = '';
+                    if (batch.legendaries.length === 0) {
+                        batchHtml = `<div class="pull-batch">Pulls ${batch.start}-${batch.end}: Nothing...</div>`;
+                    } else {
+                        batch.legendaries.forEach(leg => {
+                            const typeText = {
+                                mercy: '<span class="mercy-text">⭐ MERCY!</span>',
+                                boosted: '<span class="legendary-text">🔥 BOOSTED!</span>',
+                                other: '<span class="legendary-text">Other Legendary</span>'
+                            }[leg.type];
+                            const className = leg.type === 'mercy' ? 'pull-batch mercy-pull' : 'pull-batch legendary';
+                            batchHtml += `<div class="${className}">Pull #${leg.pull}: ${typeText}</div>`;
+                        });
+                    }
+
+                    pullsDiv.insertAdjacentHTML('afterbegin', batchHtml);
+                    currentBatch++;
+                }, 1000);
+            }, 500);
+        }
+
+        function runMultipleSimulation() {
+            const targetCopies = parseInt(document.getElementById('target-copies').value);
+            const numRuns = parseInt(document.getElementById('num-runs').value);
+            const useBoosters = document.getElementById('multiple-booster').checked;
+            const pityValue = parseInt(document.getElementById('multiple-pity').value);
+            const initialPity = 90 - Math.max(1, Math.min(90, pityValue));
+            const resultsDiv = document.getElementById('results');
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Running simulations...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const { avg, median, min, max } = simulateMultiple(targetCopies, numRuns, useBoosters, initialPity);
+
+                let html = '<h3>📊 Multiple Run Results</h3>';
+                html += `<p class="results-summary">Simulated ${numRuns.toLocaleString()} runs to get ${targetCopies} Mercy cop${targetCopies > 1 ? 'ies' : 'y'}</p>`;
+                html += '<div class="stats">';
+                html += `<div class="stat-card"><div class="label">Average Draws</div><div class="value">${avg.toFixed(2)}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Median</div><div class="value">${median}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Minimum</div><div class="value">${min}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Maximum</div><div class="value">${max}</div></div>`;
+                html += '</div>';
+
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+
+        function runProbabilityCheck() {
+            const maxDraws = parseInt(document.getElementById('prob-draws').value);
+            const numRuns = parseInt(document.getElementById('prob-runs').value);
+            const useBoosters = document.getElementById('prob-booster').checked;
+            const pityValue = parseInt(document.getElementById('prob-pity').value);
+            const initialPity = 90 - Math.max(1, Math.min(90, pityValue));
+            const resultsDiv = document.getElementById('results');
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Calculating probabilities... This may take a moment.</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const { mercyCounts, totalBoosters, totalMercy } = probabilityCheck(maxDraws, numRuns, useBoosters, initialPity);
+
+                const avgMercy = totalMercy / numRuns;
+                const avgBoosters = totalBoosters / numRuns;
+
+                const maxCountValue = Math.max(...Object.values(mercyCounts));
+                const sortedKeys = Object.keys(mercyCounts).map(Number).sort((a, b) => a - b);
+
+                let atLeastOne = 0;
+                for (let i = 1; i <= Math.max(...sortedKeys); i++) {
+                    atLeastOne += mercyCounts[i] || 0;
+                }
+
+                let html = '<h3>📊 Probability Analysis</h3>';
+                html += `<p class="results-summary">Results from ${numRuns.toLocaleString()} simulations with ${maxDraws} draws each</p>`;
+                
+                html += '<div class="stats">';
+                html += `<div class="stat-card"><div class="label">Average Mercy</div><div class="value">${avgMercy.toFixed(2)}</div></div>`;
+                html += `<div class="stat-card"><div class="label">At Least 1 Mercy</div><div class="value">${((atLeastOne / numRuns) * 100).toFixed(2)}%</div></div>`;
+                html += `<div class="stat-card"><div class="label">Avg Boosters Used</div><div class="value">${avgBoosters.toFixed(2)}</div></div>`;
+                html += '</div>';
+
+                html += '<div class="bar-graph"><h3>Mercy Distribution</h3>';
+                sortedKeys.forEach(count => {
+                    const prob = (mercyCounts[count] / numRuns) * 100;
+                    const barWidth = (mercyCounts[count] / maxCountValue) * 100;
+                    html += `
+                        <div class="bar-item">
+                            <div class="bar-label">
+                                <span>${count} Mercy</span>
+                                <span>${prob.toFixed(3)}%</span>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-fill" style="width: ${barWidth}%">${prob.toFixed(2)}%</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+    </script>
+</body>
+</html>
