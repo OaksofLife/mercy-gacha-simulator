@@ -1159,6 +1159,7 @@
             document.getElementById('results').classList.remove('show');
         }
 
+        // FIXED: Using the same logic as PLEASE Mercy
         function simulateSingle(maxDraws, heroes, boostTargetId, useBoosters, initialPity = 0) {
             if (!validateProbabilities()) {
                 alert('Hero probabilities must sum to 1.0!');
@@ -1185,11 +1186,41 @@
                         if (Math.random() < 0.5) {
                             selectedHero = boostTargetHero;
                         } else {
+                            // Select from other heroes (excluding boost target)
+                            const rand = Math.random();
+                            let cumProb = 0;
+                            const totalOtherProb = 1 - boostTargetHero.prob;
+                            for (const hero of heroes) {
+                                if (hero.id === boostTargetId) continue;
+                                cumProb += hero.prob / totalOtherProb;
+                                if (rand < cumProb) {
+                                    selectedHero = hero;
+                                    break;
+                                }
+                            }
+                            if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
+                        }
+                    } else {
+                        if (useBoosters) {
+                            boostersUsed++;
+                            // Use boosters: boost target gets higher chance
                             const rand = Math.random();
                             let cumProb = 0;
                             for (const hero of heroes) {
-                                if (hero.id === boostTargetId) continue;
-                                cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
+                                cumProb += adjustedProb;
+                                if (rand < cumProb) {
+                                    selectedHero = hero;
+                                    break;
+                                }
+                            }
+                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                        } else {
+                            // Normal distribution based on hero probabilities
+                            const rand = Math.random();
+                            let cumProb = 0;
+                            for (const hero of heroes) {
+                                cumProb += hero.prob;
                                 if (rand < cumProb) {
                                     selectedHero = hero;
                                     break;
@@ -1197,17 +1228,6 @@
                             }
                             if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                         }
-                    } else {
-                        const rand = Math.random();
-                        let cumProb = 0;
-                        for (const hero of heroes) {
-                            cumProb += hero.prob;
-                            if (rand < cumProb) {
-                                selectedHero = hero;
-                                break;
-                            }
-                        }
-                        if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                     }
 
                     heroCounts[selectedHero.id]++;
@@ -1249,9 +1269,35 @@
                             } else {
                                 const rand = Math.random();
                                 let cumProb = 0;
+                                const totalOtherProb = 1 - boostTargetHero.prob;
                                 for (const hero of heroes) {
                                     if (hero.id === boostTargetId) continue;
-                                    cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                    cumProb += hero.prob / totalOtherProb;
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
+                            }
+                        } else {
+                            if (useBoosters) {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
+                                    cumProb += adjustedProb;
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                            } else {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    cumProb += hero.prob;
                                     if (rand < cumProb) {
                                         selectedHero = hero;
                                         break;
@@ -1259,17 +1305,6 @@
                                 }
                                 if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                             }
-                        } else {
-                            const rand = Math.random();
-                            let cumProb = 0;
-                            for (const hero of heroes) {
-                                cumProb += hero.prob;
-                                if (rand < cumProb) {
-                                    selectedHero = hero;
-                                    break;
-                                }
-                            }
-                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                         }
 
                         if (selectedHero.id === targetHeroId) targetCount++;
@@ -1320,9 +1355,36 @@
                             } else {
                                 const rand = Math.random();
                                 let cumProb = 0;
+                                const totalOtherProb = 1 - boostTargetHero.prob;
                                 for (const hero of heroes) {
                                     if (hero.id === boostTargetId) continue;
-                                    cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                    cumProb += hero.prob / totalOtherProb;
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
+                            }
+                        } else {
+                            if (useBoosters) {
+                                boostersUsed++;
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
+                                    cumProb += adjustedProb;
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                            } else {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    cumProb += hero.prob;
                                     if (rand < cumProb) {
                                         selectedHero = hero;
                                         break;
@@ -1330,17 +1392,6 @@
                                 }
                                 if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                             }
-                        } else {
-                            const rand = Math.random();
-                            let cumProb = 0;
-                            for (const hero of heroes) {
-                                cumProb += hero.prob;
-                                if (rand < cumProb) {
-                                    selectedHero = hero;
-                                    break;
-                                }
-                            }
-                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                         }
 
                         if (selectedHero.id === targetHeroId) targetCount++;
@@ -1443,9 +1494,36 @@
                                 } else {
                                     const rand = Math.random();
                                     let cumProb = 0;
+                                    const totalOtherProb = 1 - boostTargetHero.prob;
                                     for (const hero of heroes) {
                                         if (hero.id === boostTargetId) continue;
-                                        cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                        cumProb += hero.prob / totalOtherProb;
+                                        if (rand < cumProb) {
+                                            selectedHero = hero;
+                                            break;
+                                        }
+                                    }
+                                    if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
+                                }
+                            } else {
+                                if (useBoosters) {
+                                    boostersUsed++;
+                                    const rand = Math.random();
+                                    let cumProb = 0;
+                                    for (const hero of heroes) {
+                                        const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
+                                        cumProb += adjustedProb;
+                                        if (rand < cumProb) {
+                                            selectedHero = hero;
+                                            break;
+                                        }
+                                    }
+                                    if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                                } else {
+                                    const rand = Math.random();
+                                    let cumProb = 0;
+                                    for (const hero of heroes) {
+                                        cumProb += hero.prob;
                                         if (rand < cumProb) {
                                             selectedHero = hero;
                                             break;
@@ -1453,17 +1531,6 @@
                                     }
                                     if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                                 }
-                            } else {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                for (const hero of heroes) {
-                                    cumProb += hero.prob;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
                             }
 
                             heroCounts[selectedHero.id]++;
