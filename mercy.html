@@ -913,8 +913,8 @@
                         if (useBoosters) {
                             boostersUsed++;
                             const rand = Math.random();
-                            if (rand < 0.25) { results.push({ type: 'mercy', draws: totalDraws }); mercyCount++; }
-                            else if (rand < 1.0) { results.push({ type: 'boosted', draws: totalDraws }); boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
+                            if (rand < 0.125) { results.push({ type: 'mercy', draws: totalDraws }); mercyCount++; }
+                            else if (rand < 0.5) { results.push({ type: 'boosted', draws: totalDraws }); boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                             else { results.push({ type: 'other', draws: totalDraws }); otherCount++; }
                         } else {
                             if (Math.random() < 0.5) { results.push({ type: 'boosted', draws: totalDraws }); boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
@@ -942,8 +942,8 @@
                         else {
                             if (useBoosters) {
                                 const rand = Math.random();
-                                if (rand < 0.25) mercyCount++;
-                                else if (rand < 1.0) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
+                                if (rand < 0.125) mercyCount++;
+                                else if (rand < 0.5) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                             } else {
                                 if (Math.random() < 0.5) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                                 else { if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) mercyCount++; }
@@ -972,8 +972,8 @@
                             if (useBoosters) {
                                 boostersUsed++;
                                 const rand = Math.random();
-                                if (rand < 0.25) mercyCount++;
-                                else if (rand < 1.0) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
+                                if (rand < 0.125) mercyCount++;
+                                else if (rand < 0.5) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                             } else {
                                 if (Math.random() < 0.5) { boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                                 else { if (Math.random() < MERCY_RATE_WHEN_NOT_BOOSTED / 0.5) mercyCount++; }
@@ -1041,8 +1041,8 @@
                                 if (useBoosters) {
                                     boostersUsed++;
                                     const rand = Math.random();
-                                    if (rand < 0.25) { legendaryType = 'mercy'; mercyCount++; }
-                                    else if (rand < 1.0) { legendaryType = 'boosted'; boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
+                                    if (rand < 0.125) { legendaryType = 'mercy'; mercyCount++; }
+                                    else if (rand < 0.5) { legendaryType = 'boosted'; boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }
                                     else { legendaryType = 'other'; otherCount++; }
                                 } else {
                                     if (Math.random() < 0.5) { legendaryType = 'boosted'; boostedCount++; if (boostedCount === 2) mercyIsBoosted = true; }

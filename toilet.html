@@ -531,7 +531,7 @@
             font-family: 'Cinzel', serif;
         }
 
-        .hero-row input[type="number"] {
+        .hero-row select {
             padding: 10px;
             border: 2px solid rgba(100,90,70,0.9);
             border-radius: 6px;
@@ -576,18 +576,9 @@
             font-weight: 600;
             text-align: center;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-
-        .prob-indicator.valid {
             background: rgba(40,80,40,0.6);
             color: #90EE90;
             border: 2px solid rgba(90,180,90,0.6);
-        }
-
-        .prob-indicator.invalid {
-            background: rgba(80,40,40,0.6);
-            color: #FFB6C1;
-            border: 2px solid rgba(180,90,90,0.6);
         }
 
         .btn {
@@ -861,7 +852,7 @@
                 <h3>Hero Configuration</h3>
                 <div class="hero-rows" id="hero-rows"></div>
                 <button class="add-btn" onclick="addHeroRow()">+ Add Hero</button>
-                <div id="prob-indicator" class="prob-indicator"></div>
+                <div id="prob-indicator" class="prob-indicator">✓ Configuration Valid</div>
             </div>
 
             <div class="tabs">
@@ -961,14 +952,14 @@
     </div>
 
     <script>
-        let nextHeroId = 2;
+        let nextHeroId = 1;
 
         const infoContent = {
             'draws': { title: 'Number of Draws', content: '<p><strong>What it does:</strong> Sets how many gacha pulls to simulate in a single run.</p><p><strong>How it works:</strong> The simulator will perform this many pulls and show you what you got, including all legendary drops by hero name.</p>' },
-            'booster': { title: 'Use Boosters From Start', content: '<p><strong>What it does:</strong> Changes the probability distribution when enabled.</p><p><strong>When DISABLED:</strong> Uses the base probabilities you set.</p><p><strong>When ENABLED:</strong> After getting 2 copies of the boosted hero, the boost target gets a 50% drop rate until you get them.</p>' },
+            'booster': { title: 'Use Boosters From Start', content: '<p><strong>What it does:</strong> Changes the probability distribution when enabled.</p><p><strong>When DISABLED:</strong> Default Boosted hero has 0.5 chance, rest split among other heroes.</p><p><strong>When ENABLED:</strong> After getting 2 copies of the default boosted hero, the boost target (if selected) gets 0.5 rate, and the rest share the remaining 0.5.</p>' },
             'target': { title: 'Target Copies', content: '<p><strong>What it does:</strong> Sets how many copies of the target hero you want to obtain.</p><p><strong>How it works:</strong> The simulation will continue pulling until it gets this many copies, then record how many total draws it took.</p>' },
             'target-hero': { title: 'Target Hero Name', content: '<p><strong>What it does:</strong> Selects which hero you want to track in the simulation.</p><p><strong>How it works:</strong> The simulator will count how many times this specific hero drops.</p>' },
-            'boost-target': { title: 'Boost Target Hero', content: '<p><strong>What it does:</strong> Selects which hero gets boosted rates.</p><p><strong>How it works:</strong> After obtaining 2 copies of this hero, if boosters are enabled, the boost target gets increased to 50% drop rate.</p><p><strong>Note:</strong> If the boost target is the same as the default boosted hero (first in list), the "Use boosters from start" option will be disabled.</p>' },
+            'boost-target': { title: 'Boost Target Hero', content: '<p><strong>What it does:</strong> Selects which hero gets boosted rates after default boosted is pulled twice.</p><p><strong>How it works:</strong> After obtaining 2 copies of the default boosted hero, if boosters are enabled, the boost target gets 0.5 drop rate and the rest share 0.5.</p>' },
             'runs': { title: 'Number of Runs', content: '<p><strong>What it does:</strong> Runs multiple independent simulations and shows average statistics.</p><p><strong>Recommended values:</strong></p><ul><li>100-500 runs: Quick estimate</li><li>1,000 runs: Good balance</li><li>10,000+ runs: Very accurate</li></ul>' },
             'maxdraws': { title: 'Maximum Draws', content: '<p><strong>What it does:</strong> Sets a fixed number of draws for probability analysis.</p><p><strong>Use this to answer:</strong> "If I do exactly X pulls, what are my chances of getting Y copies of my target hero?"</p>' },
             'probruns': { title: 'Number of Runs (Probability)', content: '<p><strong>What it does:</strong> How many times to simulate the draw sequence for probability calculation.</p><p><strong>Recommended:</strong> 100,000 runs for good accuracy.</p>' },
@@ -980,31 +971,29 @@
             const container = document.getElementById('hero-rows');
             container.innerHTML = `
                 <div class="hero-row" id="hero-row-0">
-                    <input type="text" class="hero-name" placeholder="Hero Name" value="Boosted Hero" data-hero-id="0">
-                    <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0.5" data-hero-id="0">
+                    <input type="text" class="hero-name" placeholder="Hero Name" value="Default Boosted" data-hero-id="0">
+                    <select class="hero-rarity" data-hero-id="0">
+                        <option value="default_boosted" selected>Default Boosted</option>
+                        <option value="normal">Normal</option>
+                        <option value="shiny">Shiny</option>
+                    </select>
                     <button class="remove-btn" disabled>✕</button>
-                </div>
-                <div class="hero-row" id="hero-row-1">
-                    <input type="text" class="hero-name" placeholder="Hero Name" value="General Pool" data-hero-id="1">
-                    <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0.5" data-hero-id="1">
-                    <button class="remove-btn" onclick="removeHeroRow(1)">✕</button>
                 </div>
             `;
             
-            attachProbListeners();
-            validateProbabilities();
+            attachListeners();
             updateAllDropdowns();
         }
 
-        function attachProbListeners() {
-            document.querySelectorAll('.hero-prob, .hero-name').forEach(input => {
-                input.removeEventListener('input', handleHeroChange);
-                input.addEventListener('input', handleHeroChange);
+        function attachListeners() {
+            document.querySelectorAll('.hero-rarity, .hero-name').forEach(input => {
+                input.removeEventListener('change', handleHeroChange);
+                input.addEventListener('change', handleHeroChange);
             });
         }
 
         function handleHeroChange() {
-            validateProbabilities();
+            validateConfiguration();
             updateAllDropdowns();
         }
 
@@ -1017,13 +1006,17 @@
             row.id = `hero-row-${heroId}`;
             row.innerHTML = `
                 <input type="text" class="hero-name" placeholder="Hero Name" value="Hero ${heroId}" data-hero-id="${heroId}">
-                <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0" data-hero-id="${heroId}">
+                <select class="hero-rarity" data-hero-id="${heroId}">
+                    <option value="default_boosted">Default Boosted</option>
+                    <option value="normal" selected>Normal</option>
+                    <option value="shiny">Shiny</option>
+                </select>
                 <button class="remove-btn" onclick="removeHeroRow(${heroId})">✕</button>
             `;
             
             container.appendChild(row);
-            attachProbListeners();
-            validateProbabilities();
+            attachListeners();
+            validateConfiguration();
             updateAllDropdowns();
         }
 
@@ -1031,28 +1024,51 @@
             const row = document.getElementById(`hero-row-${heroId}`);
             if (row) {
                 row.remove();
-                validateProbabilities();
+                validateConfiguration();
                 updateAllDropdowns();
             }
         }
 
-        function validateProbabilities() {
-            const probInputs = document.querySelectorAll('.hero-prob');
-            let total = 0;
-            probInputs.forEach(input => {
-                total += parseFloat(input.value) || 0;
+        function validateConfiguration() {
+            const rows = document.querySelectorAll('.hero-row');
+            let defaultBoostedCount = 0;
+            
+            rows.forEach(row => {
+                const rarity = row.querySelector('.hero-rarity').value;
+                if (rarity === 'default_boosted') defaultBoostedCount++;
             });
             
             const indicator = document.getElementById('prob-indicator');
-            const diff = Math.abs(1 - total);
             
-            if (diff < 0.001) {
-                indicator.textContent = '✓ Probabilities sum to 1.0';
-                indicator.className = 'prob-indicator valid';
+            // Disable all default_boosted options except the currently selected ones
+            rows.forEach(row => {
+                const select = row.querySelector('.hero-rarity');
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value === 'default_boosted') {
+                        option.disabled = (defaultBoostedCount >= 1 && currentValue !== 'default_boosted');
+                    }
+                });
+            });
+            
+            if (defaultBoostedCount === 1) {
+                indicator.textContent = '✓ Configuration Valid';
+                indicator.className = 'prob-indicator';
+                indicator.style.background = 'rgba(40,80,40,0.6)';
+                indicator.style.color = '#90EE90';
+                indicator.style.borderColor = 'rgba(90,180,90,0.6)';
                 return true;
+            } else if (defaultBoostedCount === 0) {
+                indicator.textContent = '✗ Must have exactly 1 Default Boosted hero';
+                indicator.style.background = 'rgba(80,40,40,0.6)';
+                indicator.style.color = '#FFB6C1';
+                indicator.style.borderColor = 'rgba(180,90,90,0.6)';
+                return false;
             } else {
-                indicator.textContent = `✗ Probabilities sum to ${total.toFixed(3)} (must equal 1.0)`;
-                indicator.className = 'prob-indicator invalid';
+                indicator.textContent = '✗ Can only have 1 Default Boosted hero';
+                indicator.style.background = 'rgba(80,40,40,0.6)';
+                indicator.style.color = '#FFB6C1';
+                indicator.style.borderColor = 'rgba(180,90,90,0.6)';
                 return false;
             }
         }
@@ -1063,14 +1079,96 @@
             
             rows.forEach(row => {
                 const name = row.querySelector('.hero-name').value.trim();
-                const prob = parseFloat(row.querySelector('.hero-prob').value) || 0;
+                const rarity = row.querySelector('.hero-rarity').value;
                 const heroId = row.querySelector('.hero-name').dataset.heroId;
-                if (name && prob > 0) {
-                    heroList.push({ name, prob, id: heroId });
+                if (name) {
+                    heroList.push({ name, rarity, id: heroId });
                 }
             });
             
             return heroList;
+        }
+
+        function calculateProbabilities(heroes, defaultBoostedPulled = false, boostTargetId = null) {
+            const probabilities = {};
+            const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
+            
+            if (!defaultBoostedPulled) {
+                // Default boosted gets 0.5, rest share 0.5
+                probabilities[defaultBoosted.id] = 0.5;
+                
+                const otherHeroes = heroes.filter(h => h.rarity !== 'default_boosted');
+                let normalWeight = 0;
+                let shinyWeight = 0;
+                
+                otherHeroes.forEach(h => {
+                    if (h.rarity === 'normal') normalWeight += 3;
+                    else if (h.rarity === 'shiny') shinyWeight += 1;
+                });
+                
+                const totalWeight = normalWeight + shinyWeight;
+                
+                otherHeroes.forEach(h => {
+                    const weight = h.rarity === 'normal' ? 3 : 1;
+                    probabilities[h.id] = 0.5 * (weight / totalWeight);
+                });
+            } else if (boostTargetId) {
+                // Boost target gets 0.5, rest share 0.5
+                probabilities[boostTargetId] = 0.5;
+                
+                const otherHeroes = heroes.filter(h => h.id !== boostTargetId);
+                let normalWeight = 0;
+                let shinyWeight = 0;
+                
+                otherHeroes.forEach(h => {
+                    // Default boosted is now normal
+                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                    if (effectiveRarity === 'normal') normalWeight += 3;
+                    else if (effectiveRarity === 'shiny') shinyWeight += 1;
+                });
+                
+                const totalWeight = normalWeight + shinyWeight;
+                
+                otherHeroes.forEach(h => {
+                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                    const weight = effectiveRarity === 'normal' ? 3 : 1;
+                    probabilities[h.id] = 0.5 * (weight / totalWeight);
+                });
+            } else {
+                // No boost target, all heroes share equally by weight
+                let normalWeight = 0;
+                let shinyWeight = 0;
+                
+                heroes.forEach(h => {
+                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                    if (effectiveRarity === 'normal') normalWeight += 3;
+                    else if (effectiveRarity === 'shiny') shinyWeight += 1;
+                });
+                
+                const totalWeight = normalWeight + shinyWeight;
+                
+                heroes.forEach(h => {
+                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                    const weight = effectiveRarity === 'normal' ? 3 : 1;
+                    probabilities[h.id] = weight / totalWeight;
+                });
+            }
+            
+            return probabilities;
+        }
+
+        function selectHeroByProbability(heroes, probabilities) {
+            const rand = Math.random();
+            let cumProb = 0;
+            
+            for (const hero of heroes) {
+                cumProb += probabilities[hero.id];
+                if (rand < cumProb) {
+                    return hero;
+                }
+            }
+            
+            return heroes[heroes.length - 1];
         }
 
         function updateAllDropdowns() {
@@ -1088,11 +1186,13 @@
             const currentValue = select.value;
             
             select.innerHTML = '<option value="">None</option>';
-            heroes.forEach((hero, idx) => {
-                const option = document.createElement('option');
-                option.value = hero.id;
-                option.textContent = hero.name;
-                select.appendChild(option);
+            heroes.forEach((hero) => {
+                if (hero.rarity !== 'default_boosted') {
+                    const option = document.createElement('option');
+                    option.value = hero.id;
+                    option.textContent = hero.name;
+                    select.appendChild(option);
+                }
             });
             
             if (currentValue) select.value = currentValue;
@@ -1123,7 +1223,7 @@
                 const select = document.getElementById(selectId);
                 const checkbox = document.getElementById(boosterCheckboxes[idx]);
                 
-                if (select.value === '0') {
+                if (!select.value) {
                     checkbox.disabled = true;
                     checkbox.checked = false;
                 } else {
@@ -1159,19 +1259,18 @@
             document.getElementById('results').classList.remove('show');
         }
 
-        // FIXED: Using the same logic as PLEASE Mercy
         function simulateSingle(maxDraws, heroes, boostTargetId, useBoosters, initialPity = 0) {
-            if (!validateProbabilities()) {
-                alert('Hero probabilities must sum to 1.0!');
+            if (!validateConfiguration()) {
+                alert('Must have exactly 1 Default Boosted hero!');
                 return null;
             }
 
             let totalDraws = 0, pity = initialPity;
             const heroCounts = {};
             heroes.forEach(h => heroCounts[h.id] = 0);
-            let boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+            let defaultBoostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
             const results = [];
-            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+            const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
 
             while (totalDraws < maxDraws) {
                 totalDraws++; pity++;
@@ -1179,63 +1278,22 @@
                 
                 if (gotLegendary) {
                     pity = 0;
-                    let selectedHero;
-
-                    if (heroIsBoosted && boostTargetHero) {
-                        boostersUsed++;
-                        if (Math.random() < 0.5) {
-                            selectedHero = boostTargetHero;
-                        } else {
-                            // Select from other heroes (excluding boost target)
-                            const rand = Math.random();
-                            let cumProb = 0;
-                            const totalOtherProb = 1 - boostTargetHero.prob;
-                            for (const hero of heroes) {
-                                if (hero.id === boostTargetId) continue;
-                                cumProb += hero.prob / totalOtherProb;
-                                if (rand < cumProb) {
-                                    selectedHero = hero;
-                                    break;
-                                }
-                            }
-                            if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
-                        }
-                    } else {
-                        if (useBoosters) {
-                            boostersUsed++;
-                            // Use boosters: boost target gets higher chance
-                            const rand = Math.random();
-                            let cumProb = 0;
-                            for (const hero of heroes) {
-                                const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
-                                cumProb += adjustedProb;
-                                if (rand < cumProb) {
-                                    selectedHero = hero;
-                                    break;
-                                }
-                            }
-                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                        } else {
-                            // Normal distribution based on hero probabilities
-                            const rand = Math.random();
-                            let cumProb = 0;
-                            for (const hero of heroes) {
-                                cumProb += hero.prob;
-                                if (rand < cumProb) {
-                                    selectedHero = hero;
-                                    break;
-                                }
-                            }
-                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                        }
-                    }
+                    
+                    const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                    const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                     heroCounts[selectedHero.id]++;
                     results.push({ hero: selectedHero.name, draws: totalDraws, id: selectedHero.id });
 
-                    if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
-                        boostedCount++;
-                        if (boostedCount === 2) heroIsBoosted = true;
+                    if (heroIsBoosted && boostTargetId) {
+                        boostersUsed++;
+                    }
+
+                    if (useBoosters && selectedHero.id === defaultBoosted.id) {
+                        defaultBoostedCount++;
+                        if (defaultBoostedCount === 2 && boostTargetId) {
+                            heroIsBoosted = true;
+                        }
                     }
                 }
             }
@@ -1244,16 +1302,16 @@
         }
 
         function simulateMultiple(targetHeroId, targetCopies, numRuns, heroes, boostTargetId, useBoosters, initialPity = 0) {
-            if (!validateProbabilities()) {
-                alert('Hero probabilities must sum to 1.0!');
+            if (!validateConfiguration()) {
+                alert('Must have exactly 1 Default Boosted hero!');
                 return null;
             }
 
             const results = [];
-            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+            const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
 
             for (let run = 0; run < numRuns; run++) {
-                let totalDraws = 0, pity = initialPity, targetCount = 0, boostedCount = 0, heroIsBoosted = false;
+                let totalDraws = 0, pity = initialPity, targetCount = 0, defaultBoostedCount = 0, heroIsBoosted = false;
 
                 while (targetCount < targetCopies) {
                     totalDraws++; pity++;
@@ -1261,57 +1319,17 @@
                     
                     if (gotLegendary) {
                         pity = 0;
-                        let selectedHero;
-
-                        if (heroIsBoosted && boostTargetHero) {
-                            if (Math.random() < 0.5) {
-                                selectedHero = boostTargetHero;
-                            } else {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                const totalOtherProb = 1 - boostTargetHero.prob;
-                                for (const hero of heroes) {
-                                    if (hero.id === boostTargetId) continue;
-                                    cumProb += hero.prob / totalOtherProb;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
-                            }
-                        } else {
-                            if (useBoosters) {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                for (const hero of heroes) {
-                                    const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
-                                    cumProb += adjustedProb;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                            } else {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                for (const hero of heroes) {
-                                    cumProb += hero.prob;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                            }
-                        }
+                        
+                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                        const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                         if (selectedHero.id === targetHeroId) targetCount++;
                         
-                        if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
-                            boostedCount++;
-                            if (boostedCount === 2) heroIsBoosted = true;
+                        if (useBoosters && selectedHero.id === defaultBoosted.id) {
+                            defaultBoostedCount++;
+                            if (defaultBoostedCount === 2 && boostTargetId) {
+                                heroIsBoosted = true;
+                            }
                         }
                     }
                 }
@@ -1328,17 +1346,17 @@
         }
 
         function probabilityCheck(targetHeroId, maxDraws, numRuns, heroes, boostTargetId, useBoosters, initialPity = 0) {
-            if (!validateProbabilities()) {
-                alert('Hero probabilities must sum to 1.0!');
+            if (!validateConfiguration()) {
+                alert('Must have exactly 1 Default Boosted hero!');
                 return null;
             }
 
             const heroCounts = {};
             let totalBoosters = 0, totalTarget = 0;
-            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+            const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
 
             for (let run = 0; run < numRuns; run++) {
-                let totalDraws = 0, pity = initialPity, targetCount = 0, boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+                let totalDraws = 0, pity = initialPity, targetCount = 0, defaultBoostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
 
                 while (totalDraws < maxDraws) {
                     totalDraws++; pity++;
@@ -1346,59 +1364,21 @@
                     
                     if (gotLegendary) {
                         pity = 0;
-                        let selectedHero;
-
-                        if (heroIsBoosted && boostTargetHero) {
-                            boostersUsed++;
-                            if (Math.random() < 0.5) {
-                                selectedHero = boostTargetHero;
-                            } else {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                const totalOtherProb = 1 - boostTargetHero.prob;
-                                for (const hero of heroes) {
-                                    if (hero.id === boostTargetId) continue;
-                                    cumProb += hero.prob / totalOtherProb;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
-                            }
-                        } else {
-                            if (useBoosters) {
-                                boostersUsed++;
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                for (const hero of heroes) {
-                                    const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
-                                    cumProb += adjustedProb;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                            } else {
-                                const rand = Math.random();
-                                let cumProb = 0;
-                                for (const hero of heroes) {
-                                    cumProb += hero.prob;
-                                    if (rand < cumProb) {
-                                        selectedHero = hero;
-                                        break;
-                                    }
-                                }
-                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                            }
-                        }
+                        
+                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                        const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                         if (selectedHero.id === targetHeroId) targetCount++;
                         
-                        if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
-                            boostedCount++;
-                            if (boostedCount === 2) heroIsBoosted = true;
+                        if (heroIsBoosted && boostTargetId) {
+                            boostersUsed++;
+                        }
+                        
+                        if (useBoosters && selectedHero.id === defaultBoosted.id) {
+                            defaultBoostedCount++;
+                            if (defaultBoostedCount === 2 && boostTargetId) {
+                                heroIsBoosted = true;
+                            }
                         }
                     }
                 }
@@ -1439,6 +1419,7 @@
                 if (!simResult) return;
 
                 const { results, totalDraws, heroCounts, boostersUsed } = simResult;
+                const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
 
                 let html = '<h3>📊 Simulation Results</h3><div class="stats">';
                 html += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
@@ -1450,11 +1431,11 @@
                 html += `<div class="stat-card"><div class="label">Boosters Used</div><div class="value">${boostersUsed}</div></div></div>`;
                 html += '<h3 style="margin-top: 30px;">Pull History</h3>';
                 
-                let boostedLegendaryCount = 0;
+                let defaultBoostedLegendaryCount = 0;
                 results.forEach((r, i) => {
                     const isBoosted = r.id === boostTargetId;
-                    if (isBoosted) boostedLegendaryCount++;
-                    const boostMsg = (isBoosted && boostedLegendaryCount === 2) ? ' (Hero now boosted!)' : '';
+                    if (r.id === defaultBoosted.id) defaultBoostedLegendaryCount++;
+                    const boostMsg = (r.id === defaultBoosted.id && defaultBoostedLegendaryCount === 2) ? ' (Boost activated!)' : '';
                     const className = isBoosted ? 'boosted' : '';
                     html += `<div class="result-item ${className}">#${i + 1}: ${r.hero}${boostMsg} - Total draws: ${r.draws}</div>`;
                 });
@@ -1472,9 +1453,9 @@
                 let totalDraws = 0, pity = initialPity;
                 const heroCounts = {};
                 heroes.forEach(h => heroCounts[h.id] = 0);
-                let boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+                let defaultBoostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
                 const allPulls = [];
-                const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+                const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
 
                 while (totalDraws < maxDraws) {
                     const batchPulls = [], batchSize = Math.min(10, maxDraws - totalDraws);
@@ -1485,60 +1466,22 @@
                         
                         if (gotLegendary) {
                             pity = 0;
-                            let selectedHero;
-
-                            if (heroIsBoosted && boostTargetHero) {
-                                boostersUsed++;
-                                if (Math.random() < 0.5) {
-                                    selectedHero = boostTargetHero;
-                                } else {
-                                    const rand = Math.random();
-                                    let cumProb = 0;
-                                    const totalOtherProb = 1 - boostTargetHero.prob;
-                                    for (const hero of heroes) {
-                                        if (hero.id === boostTargetId) continue;
-                                        cumProb += hero.prob / totalOtherProb;
-                                        if (rand < cumProb) {
-                                            selectedHero = hero;
-                                            break;
-                                        }
-                                    }
-                                    if (!selectedHero) selectedHero = heroes.find(h => h.id !== boostTargetId);
-                                }
-                            } else {
-                                if (useBoosters) {
-                                    boostersUsed++;
-                                    const rand = Math.random();
-                                    let cumProb = 0;
-                                    for (const hero of heroes) {
-                                        const adjustedProb = hero.id === boostTargetId ? hero.prob * 0.5 : hero.prob * 0.75;
-                                        cumProb += adjustedProb;
-                                        if (rand < cumProb) {
-                                            selectedHero = hero;
-                                            break;
-                                        }
-                                    }
-                                    if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                                } else {
-                                    const rand = Math.random();
-                                    let cumProb = 0;
-                                    for (const hero of heroes) {
-                                        cumProb += hero.prob;
-                                        if (rand < cumProb) {
-                                            selectedHero = hero;
-                                            break;
-                                        }
-                                    }
-                                    if (!selectedHero) selectedHero = heroes[heroes.length - 1];
-                                }
-                            }
+                            
+                            const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                            const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                             heroCounts[selectedHero.id]++;
                             batchPulls.push({ pull: totalDraws, hero: selectedHero.name, id: selectedHero.id });
 
-                            if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
-                                boostedCount++;
-                                if (boostedCount === 2) heroIsBoosted = true;
+                            if (heroIsBoosted && boostTargetId) {
+                                boostersUsed++;
+                            }
+
+                            if (useBoosters && selectedHero.id === defaultBoosted.id) {
+                                defaultBoostedCount++;
+                                if (defaultBoostedCount === 2 && boostTargetId) {
+                                    heroIsBoosted = true;
+                                }
                             }
                         }
                     }
@@ -1672,7 +1615,6 @@
             }, 100);
         }
 
-        // Event listeners for boost target selection
         document.addEventListener('DOMContentLoaded', () => {
             initializeHeroes();
             
