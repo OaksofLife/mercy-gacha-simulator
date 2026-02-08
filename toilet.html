@@ -1089,29 +1089,53 @@
             return heroList;
         }
 
-        function calculateProbabilities(heroes, defaultBoostedPulled = false, boostTargetId = null) {
+        function calculateProbabilities(heroes, defaultBoostedPulled = false, boostTargetId = null, useBoosters = false) {
             const probabilities = {};
             const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
             
             if (!defaultBoostedPulled) {
-                // Default boosted gets 0.5, rest share 0.5
-                probabilities[defaultBoosted.id] = 0.5;
-                
-                const otherHeroes = heroes.filter(h => h.rarity !== 'default_boosted');
-                let normalWeight = 0;
-                let shinyWeight = 0;
-                
-                otherHeroes.forEach(h => {
-                    if (h.rarity === 'normal') normalWeight += 3;
-                    else if (h.rarity === 'shiny') shinyWeight += 1;
-                });
-                
-                const totalWeight = normalWeight + shinyWeight;
-                
-                otherHeroes.forEach(h => {
-                    const weight = h.rarity === 'normal' ? 3 : 1;
-                    probabilities[h.id] = 0.5 * (weight / totalWeight);
-                });
+                if (useBoosters && boostTargetId) {
+                    // With boosters from start: 12.5% boost target, 37.5% default boosted, 50% others
+                    probabilities[boostTargetId] = 0.125;
+                    probabilities[defaultBoosted.id] = 0.375;
+                    
+                    const otherHeroes = heroes.filter(h => h.id !== boostTargetId && h.rarity !== 'default_boosted');
+                    let normalWeight = 0;
+                    let shinyWeight = 0;
+                    
+                    otherHeroes.forEach(h => {
+                        if (h.rarity === 'normal') normalWeight += 3;
+                        else if (h.rarity === 'shiny') shinyWeight += 1;
+                    });
+                    
+                    const totalWeight = normalWeight + shinyWeight;
+                    
+                    if (totalWeight > 0) {
+                        otherHeroes.forEach(h => {
+                            const weight = h.rarity === 'normal' ? 3 : 1;
+                            probabilities[h.id] = 0.5 * (weight / totalWeight);
+                        });
+                    }
+                } else {
+                    // Default boosted gets 0.5, rest share 0.5
+                    probabilities[defaultBoosted.id] = 0.5;
+                    
+                    const otherHeroes = heroes.filter(h => h.rarity !== 'default_boosted');
+                    let normalWeight = 0;
+                    let shinyWeight = 0;
+                    
+                    otherHeroes.forEach(h => {
+                        if (h.rarity === 'normal') normalWeight += 3;
+                        else if (h.rarity === 'shiny') shinyWeight += 1;
+                    });
+                    
+                    const totalWeight = normalWeight + shinyWeight;
+                    
+                    otherHeroes.forEach(h => {
+                        const weight = h.rarity === 'normal' ? 3 : 1;
+                        probabilities[h.id] = 0.5 * (weight / totalWeight);
+                    });
+                }
             } else if (boostTargetId) {
                 // Boost target gets 0.5, rest share 0.5
                 probabilities[boostTargetId] = 0.5;
@@ -1279,15 +1303,18 @@
                 if (gotLegendary) {
                     pity = 0;
                     
-                    const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                    // Count boosters used
+                    if (useBoosters && !heroIsBoosted && boostTargetId) {
+                        boostersUsed++;
+                    } else if (heroIsBoosted && boostTargetId) {
+                        boostersUsed++;
+                    }
+                    
+                    const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null, useBoosters && !heroIsBoosted && boostTargetId);
                     const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                     heroCounts[selectedHero.id]++;
                     results.push({ hero: selectedHero.name, draws: totalDraws, id: selectedHero.id });
-
-                    if (heroIsBoosted && boostTargetId) {
-                        boostersUsed++;
-                    }
 
                     if (useBoosters && selectedHero.id === defaultBoosted.id) {
                         defaultBoostedCount++;
@@ -1320,7 +1347,7 @@
                     if (gotLegendary) {
                         pity = 0;
                         
-                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null, useBoosters && !heroIsBoosted && boostTargetId);
                         const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                         if (selectedHero.id === targetHeroId) targetCount++;
@@ -1365,14 +1392,17 @@
                     if (gotLegendary) {
                         pity = 0;
                         
-                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                        // Count boosters used
+                        if (useBoosters && !heroIsBoosted && boostTargetId) {
+                            boostersUsed++;
+                        } else if (heroIsBoosted && boostTargetId) {
+                            boostersUsed++;
+                        }
+                        
+                        const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null, useBoosters && !heroIsBoosted && boostTargetId);
                         const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                         if (selectedHero.id === targetHeroId) targetCount++;
-                        
-                        if (heroIsBoosted && boostTargetId) {
-                            boostersUsed++;
-                        }
                         
                         if (useBoosters && selectedHero.id === defaultBoosted.id) {
                             defaultBoostedCount++;
@@ -1467,15 +1497,18 @@
                         if (gotLegendary) {
                             pity = 0;
                             
-                            const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null);
+                            // Count boosters used
+                            if (useBoosters && !heroIsBoosted && boostTargetId) {
+                                boostersUsed++;
+                            } else if (heroIsBoosted && boostTargetId) {
+                                boostersUsed++;
+                            }
+                            
+                            const probabilities = calculateProbabilities(heroes, heroIsBoosted, heroIsBoosted ? boostTargetId : null, useBoosters && !heroIsBoosted && boostTargetId);
                             const selectedHero = selectHeroByProbability(heroes, probabilities);
 
                             heroCounts[selectedHero.id]++;
                             batchPulls.push({ pull: totalDraws, hero: selectedHero.name, id: selectedHero.id });
-
-                            if (heroIsBoosted && boostTargetId) {
-                                boostersUsed++;
-                            }
 
                             if (useBoosters && selectedHero.id === defaultBoosted.id) {
                                 defaultBoostedCount++;
