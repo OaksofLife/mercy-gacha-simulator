@@ -1089,17 +1089,17 @@
             return heroList;
         }
 
-        function calculateProbabilities(heroes, defaultBoostedPulled = false, boostTargetId = null, useBoosters = false) {
+        function calculateProbabilities(heroes, defaultBoostedPulled, boostTargetId, useBoosters) {
             const probabilities = {};
             const defaultBoosted = heroes.find(h => h.rarity === 'default_boosted');
             
             if (!defaultBoostedPulled) {
                 if (useBoosters && boostTargetId) {
-                    // With boosters from start: 12.5% boost target, 37.5% default boosted, 50% others
-                    probabilities[boostTargetId] = 0.125;
-                    probabilities[defaultBoosted.id] = 0.375;
+                    // Initial boosting: 12.5% for boost target, 37.5% for default boosted, rest share 50%
+                    probabilities[boostTargetId] = 0.125;  // Boost target at 12.5%
+                    probabilities[defaultBoosted.id] = 0.375;  // Default boosted at 37.5%
                     
-                    const otherHeroes = heroes.filter(h => h.id !== boostTargetId && h.rarity !== 'default_boosted');
+                    const otherHeroes = heroes.filter(h => h.id !== boostTargetId && h.id !== defaultBoosted.id);
                     let normalWeight = 0;
                     let shinyWeight = 0;
                     
@@ -1113,14 +1113,14 @@
                     if (totalWeight > 0) {
                         otherHeroes.forEach(h => {
                             const weight = h.rarity === 'normal' ? 3 : 1;
-                            probabilities[h.id] = 0.5 * (weight / totalWeight);
+                            probabilities[h.id] = 0.5 * (weight / totalWeight);  // Share the remaining 50%
                         });
                     }
-                } else {
-                    // Default boosted gets 0.5, rest share 0.5
+                } else if (!useBoosters && boostTargetId) {
+                    // No initial boosting: Default boosted at 50%, rest share 50%
                     probabilities[defaultBoosted.id] = 0.5;
                     
-                    const otherHeroes = heroes.filter(h => h.rarity !== 'default_boosted');
+                    const otherHeroes = heroes.filter(h => h.id !== defaultBoosted.id);
                     let normalWeight = 0;
                     let shinyWeight = 0;
                     
@@ -1135,18 +1135,34 @@
                         const weight = h.rarity === 'normal' ? 3 : 1;
                         probabilities[h.id] = 0.5 * (weight / totalWeight);
                     });
+                } else {
+                    // No boost target: Redistribute all odds based on weights
+                    let normalWeight = 0;
+                    let shinyWeight = 0;
+                    
+                    heroes.forEach(h => {
+                        if (h.rarity === 'normal' || h.rarity === 'default_boosted') normalWeight += 3;  // Treat default boosted as normal if no boost
+                        else if (h.rarity === 'shiny') shinyWeight += 1;
+                    });
+                    
+                    const totalWeight = normalWeight + shinyWeight;
+                    
+                    heroes.forEach(h => {
+                        const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                        const weight = effectiveRarity === 'normal' ? 3 : 1;
+                        probabilities[h.id] = weight / totalWeight;
+                    });
                 }
             } else if (boostTargetId) {
-                // Boost target gets 0.5, rest share 0.5
-                probabilities[boostTargetId] = 0.5;
+                // After two default boosted: Boost target to 50%, rest share 50%
+                probabilities[boostTargetId] = 0.5;  // Switch to 50% for boost target
                 
                 const otherHeroes = heroes.filter(h => h.id !== boostTargetId);
                 let normalWeight = 0;
                 let shinyWeight = 0;
                 
                 otherHeroes.forEach(h => {
-                    // Default boosted is now normal
-                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
+                    const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;  // Default boosted becomes normal
                     if (effectiveRarity === 'normal') normalWeight += 3;
                     else if (effectiveRarity === 'shiny') shinyWeight += 1;
                 });
@@ -1156,10 +1172,10 @@
                 otherHeroes.forEach(h => {
                     const effectiveRarity = h.rarity === 'default_boosted' ? 'normal' : h.rarity;
                     const weight = effectiveRarity === 'normal' ? 3 : 1;
-                    probabilities[h.id] = 0.5 * (weight / totalWeight);
+                    probabilities[h.id] = 0.5 * (weight / totalWeight);  // Share the remaining 50%
                 });
             } else {
-                // No boost target, all heroes share equally by weight
+                // No boost target after two default boosted: Redistribute all
                 let normalWeight = 0;
                 let shinyWeight = 0;
                 
