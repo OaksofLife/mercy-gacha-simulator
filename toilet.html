@@ -1,0 +1,1618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Toilet Simulator</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(135deg, #2a2416 0%, #3d3020 50%, #2a2416 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('BG.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.4;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(130,120,100,0.9) 0%, rgba(110,100,80,0.9) 100%);
+            color: #f4d03f;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            border: 2px solid rgba(100,90,70,0.9);
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .back-btn:hover {
+            background: linear-gradient(135deg, rgba(150,140,120,0.95) 0%, rgba(130,120,100,0.95) 100%);
+            border-color: rgba(244,208,63,0.6);
+            transform: translateX(-5px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #f4d03f;
+            position: relative;
+            padding-top: 40px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 40px;
+            background: linear-gradient(180deg, #4a4a4a 0%, #2d2d2d 100%);
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #6a6a6a 0%, #4a4a4a 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .header-sign {
+            background: linear-gradient(135deg, #6b5638 0%, #4d3d27 50%, #3d2d17 100%);
+            border: 3px solid #4d3d27;
+            border-radius: 15px;
+            padding: 30px 40px;
+            box-shadow: 
+                0 10px 30px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(160,120,80,0.3),
+                inset 0 -2px 5px rgba(0,0,0,0.5);
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            transform-origin: top center;
+            animation: signSwing 3s ease-in-out infinite;
+        }
+
+        .header-sign::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(0,0,0,0.1) 50px,
+                    rgba(0,0,0,0.1) 51px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 8px,
+                    rgba(0,0,0,0.05) 8px,
+                    rgba(0,0,0,0.05) 9px
+                );
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        @keyframes signSwing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+
+        .header h1 {
+            font-size: 3em;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.8), 0 0 20px rgba(244,208,63,0.4);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+            color: #f4d03f;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 400;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+            color: #f4d03f;
+        }
+
+        .card {
+            background: 
+                linear-gradient(135deg, rgba(110,100,80,0.4) 0%, rgba(90,80,60,0.4) 100%),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(130,120,100,0.95),
+                    rgba(130,120,100,0.95) 30px,
+                    rgba(150,140,120,0.95) 30px,
+                    rgba(150,140,120,0.95) 33px,
+                    rgba(120,110,90,0.95) 33px,
+                    rgba(120,110,90,0.95) 35px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(140,130,110,0.95),
+                    rgba(140,130,110,0.95) 40px,
+                    rgba(160,150,130,0.95) 40px,
+                    rgba(160,150,130,0.95) 43px,
+                    rgba(130,120,100,0.95) 43px,
+                    rgba(130,120,100,0.95) 45px
+                );
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 
+                0 8px 32px rgba(0,0,0,0.8), 
+                inset 0 2px 4px rgba(0,0,0,0.6),
+                inset 2px 2px 8px rgba(0,0,0,0.4);
+            border: 3px solid rgba(100,90,70,0.8);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(170,160,140,0.3) 0%, transparent 3%),
+                radial-gradient(circle at 60% 70%, rgba(150,140,120,0.3) 0%, transparent 4%),
+                radial-gradient(circle at 80% 20%, rgba(160,150,130,0.3) 0%, transparent 3%),
+                radial-gradient(circle at 30% 80%, rgba(140,130,110,0.3) 0%, transparent 4%);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(135deg, transparent 48%, rgba(80,70,50,0.4) 49%, rgba(80,70,50,0.4) 51%, transparent 52%),
+                linear-gradient(45deg, transparent 70%, rgba(80,70,50,0.3) 71%, rgba(80,70,50,0.3) 72%, transparent 73%);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            border: 2px solid rgba(100,90,70,0.9);
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(140,130,110,0.9) 0%, rgba(120,110,90,0.9) 100%);
+            color: #f4d03f;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 1px 1px rgba(170,160,140,0.2), 0 4px 6px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        .tab:hover {
+            background: linear-gradient(135deg, rgba(160,150,130,0.95) 0%, rgba(140,130,110,0.95) 100%);
+            border-color: rgba(244,208,63,0.6);
+            box-shadow: 0 0 10px rgba(244,208,63,0.3), inset 0 1px 1px rgba(170,160,140,0.3);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, rgba(180,140,60,0.9) 0%, rgba(150,120,50,0.9) 100%);
+            color: #fff8dc;
+            border-color: #f4d03f;
+            box-shadow: 0 0 15px rgba(244,208,63,0.4), inset 0 1px 1px rgba(255,248,220,0.2);
+        }
+
+        .tab-content {
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #f4d03f;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #B8860B 0%, #8B6914 100%);
+            color: #fff8dc;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid rgba(244,208,63,0.5);
+            transition: all 0.2s;
+            position: relative;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .info-btn:hover {
+            background: linear-gradient(135deg, #DAA520 0%, #B8860B 100%);
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(244,208,63,0.5);
+        }
+
+        .tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30,25,15,0.95);
+            color: #f4d03f;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            margin-bottom: 5px;
+            border: 1px solid rgba(180,140,60,0.7);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(30,25,15,0.95);
+        }
+
+        .info-btn:hover .tooltip {
+            opacity: 1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(60,50,30,0.98) 0%, rgba(50,40,25,0.98) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slideIn 0.3s;
+            border: 2px solid rgba(180,140,60,0.7);
+            box-shadow: 0 0 30px rgba(244,208,63,0.2), inset 0 1px 1px rgba(244,208,63,0.1);
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(180,140,60,0.7);
+            padding-bottom: 10px;
+        }
+
+        .modal-header h3 {
+            color: #fff8dc;
+            font-size: 1.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .close-btn {
+            font-size: 28px;
+            color: #f4d03f;
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .close-btn:hover {
+            color: #fff8dc;
+        }
+
+        .modal-body {
+            color: #f4d03f;
+            line-height: 1.6;
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+
+        .modal-body strong {
+            color: #fff8dc;
+        }
+
+        .modal-body ul {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        .modal-body li {
+            margin-bottom: 8px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(100,90,70,0.9);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            background: rgba(30,25,15,0.8);
+            color: #f4d03f;
+            font-family: 'Cinzel', serif;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #f4d03f;
+            box-shadow: 0 0 10px rgba(244,208,63,0.3), inset 0 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(244,208,63,0.5);
+        }
+
+        .input-group input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .checkbox-group {
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #f4d03f;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #B8860B;
+        }
+
+        .checkbox-group input[type="checkbox"]:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .hero-config {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(30,25,15,0.6);
+            border-radius: 10px;
+            border: 2px solid rgba(100,90,70,0.7);
+        }
+
+        .hero-config h3 {
+            color: #fff8dc;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .hero-rows {
+            margin-bottom: 15px;
+        }
+
+        .hero-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .hero-row input[type="text"] {
+            padding: 10px;
+            border: 2px solid rgba(100,90,70,0.9);
+            border-radius: 6px;
+            background: rgba(30,25,15,0.8);
+            color: #f4d03f;
+            font-family: 'Cinzel', serif;
+        }
+
+        .hero-row input[type="number"] {
+            padding: 10px;
+            border: 2px solid rgba(100,90,70,0.9);
+            border-radius: 6px;
+            background: rgba(30,25,15,0.8);
+            color: #f4d03f;
+            font-family: 'Cinzel', serif;
+        }
+
+        .remove-btn, .add-btn {
+            padding: 10px 15px;
+            border: 2px solid rgba(100,90,70,0.8);
+            border-radius: 6px;
+            background: linear-gradient(135deg, rgba(140,100,40,0.9) 0%, rgba(120,80,30,0.9) 100%);
+            color: #fff8dc;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cinzel', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .remove-btn:hover, .add-btn:hover {
+            background: linear-gradient(135deg, rgba(160,120,50,0.95) 0%, rgba(140,100,40,0.95) 100%);
+            border-color: #f4d03f;
+        }
+
+        .remove-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .add-btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .prob-indicator {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .prob-indicator.valid {
+            background: rgba(40,80,40,0.6);
+            color: #90EE90;
+            border: 2px solid rgba(90,180,90,0.6);
+        }
+
+        .prob-indicator.invalid {
+            background: rgba(80,40,40,0.6);
+            color: #FFB6C1;
+            border: 2px solid rgba(180,90,90,0.6);
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: 2px solid rgba(180,140,60,0.8);
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(180,140,60,0.9) 0%, rgba(150,120,50,0.9) 100%);
+            color: #fff8dc;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-family: 'Cinzel', serif;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 1px 1px rgba(244,208,63,0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(200,160,70,0.95) 0%, rgba(180,140,60,0.95) 100%);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6), 0 0 15px rgba(244,208,63,0.3);
+            border-color: #f4d03f;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(50,40,20,0.9) 0%, rgba(40,30,15,0.9) 100%);
+            border-radius: 10px;
+            display: none;
+            border: 2px solid rgba(180,140,60,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+            position: relative;
+            z-index: 1;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .results h3 {
+            margin-bottom: 15px;
+            color: #fff8dc;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .results-summary {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #fff8dc;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(255,248,220,0.4);
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(180,140,60,0.5) 0%, rgba(150,120,50,0.5) 100%);
+            border-radius: 8px;
+            border: 2px solid rgba(244,208,63,0.6);
+            text-align: center;
+        }
+
+        .result-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(60,50,30,0.6);
+            border-radius: 8px;
+            border-left: 4px solid #B8860B;
+            color: #f4d03f;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .result-item.boosted {
+            border-left-color: #FFD700;
+            background: rgba(80,70,30,0.5);
+            color: #FFD700;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(60,50,30,0.7) 0%, rgba(50,40,25,0.7) 100%);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid rgba(180,140,60,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4), inset 0 1px 1px rgba(244,208,63,0.1);
+        }
+
+        .stat-card .label {
+            font-size: 0.9em;
+            color: #f4d03f;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #fff8dc;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .bar-graph {
+            margin-top: 20px;
+        }
+
+        .bar-item {
+            margin-bottom: 10px;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #f4d03f;
+        }
+
+        .bar-container {
+            height: 25px;
+            background: rgba(30,25,15,0.6);
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid rgba(180,140,60,0.5);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, rgba(180,140,60,0.9) 0%, rgba(244,208,63,0.8) 50%, rgba(180,140,60,0.9) 100%);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            color: #fff8dc;
+            font-weight: 600;
+            font-size: 0.85em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            box-shadow: inset 0 1px 1px rgba(255,248,220,0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.2em;
+            color: #fff8dc;
+        }
+
+        .spinner {
+            border: 4px solid rgba(180,140,60,0.3);
+            border-top: 4px solid #f4d03f;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .dramatic-progress {
+            margin: 20px 0;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 30px;
+            background: rgba(30,25,15,0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(180,140,60,0.7);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #B8860B 0%, #f4d03f 50%, #B8860B 100%);
+            width: 0%;
+            transition: width 1s linear;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff8dc;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.9);
+            box-shadow: inset 0 1px 1px rgba(255,248,220,0.3);
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #f4d03f;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .dramatic-pulls {
+            margin-top: 20px;
+        }
+
+        .pull-batch {
+            padding: 12px;
+            margin-bottom: 10px;
+            background: rgba(60,50,30,0.6);
+            border-radius: 8px;
+            border-left: 4px solid #B8860B;
+            color: #f4d03f;
+            animation: fadeIn 0.5s;
+        }
+
+        .pull-batch.legendary {
+            border-left-color: #FFD700;
+            background: rgba(80,70,30,0.6);
+            box-shadow: 0 0 15px rgba(255,215,0,0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .legendary-text {
+            color: #FFD700;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8), 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .header p { font-size: 0.9em; }
+            .header-sign { padding: 20px 25px; }
+            .tabs { flex-direction: column; }
+            .hero-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">← Back to Menu</a>
+        
+        <div class="header">
+            <div class="header-sign">
+                <h1>🚽✨ Magic Toilet Simulator ✨🚽</h1>
+                <p>Create custom hero pools and simulate your gacha pulls!</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="hero-config">
+                <h3>Hero Configuration</h3>
+                <div class="hero-rows" id="hero-rows"></div>
+                <button class="add-btn" onclick="addHeroRow()">+ Add Hero</button>
+                <div id="prob-indicator" class="prob-indicator"></div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('single')">Single Simulation</button>
+                <button class="tab" onclick="switchTab('multiple')">Multiple Runs</button>
+                <button class="tab" onclick="switchTab('probability')">Probability Check</button>
+            </div>
+
+            <div id="single-tab" class="tab-content active">
+                <div class="input-group">
+                    <label>Number of Draws <button class="info-btn" onclick="showModal('draws')">?<span class="tooltip">How many pulls to simulate</span></button></label>
+                    <input type="number" id="single-draws" value="100" min="1">
+                </div>
+                <div class="input-group">
+                    <label>Pulls Until Pity <button class="info-btn" onclick="showModal('pity')">?<span class="tooltip">How close you are to pity</span></button></label>
+                    <input type="number" id="single-pity" value="90" min="1" max="90">
+                </div>
+                <div class="input-group">
+                    <label>Boost Target Hero <button class="info-btn" onclick="showModal('boost-target')">?<span class="tooltip">Select which hero to boost</span></button></label>
+                    <select id="single-boost-target"></select>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="single-booster"> Use boosters from start <button class="info-btn" onclick="showModal('booster')">?<span class="tooltip">Enable boosted rates from the start</span></button></label>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="dramatic-mode"> Dramatic Mode (Slow Reveal) <button class="info-btn" onclick="showModal('dramatic')">?<span class="tooltip">Reveals pulls slowly for suspense</span></button></label>
+                </div>
+                <button class="btn" onclick="runSingleSimulation()">Run Simulation</button>
+            </div>
+
+            <div id="multiple-tab" class="tab-content">
+                <div class="input-group">
+                    <label>Target Hero Name <button class="info-btn" onclick="showModal('target-hero')">?<span class="tooltip">Which hero to track</span></button></label>
+                    <select id="target-hero-select"></select>
+                </div>
+                <div class="input-group">
+                    <label>Target Copies <button class="info-btn" onclick="showModal('target')">?<span class="tooltip">How many copies to aim for</span></button></label>
+                    <input type="number" id="target-copies" value="1" min="1">
+                </div>
+                <div class="input-group">
+                    <label>Number of Runs <button class="info-btn" onclick="showModal('runs')">?<span class="tooltip">How many simulations to run</span></button></label>
+                    <input type="number" id="num-runs" value="1000" min="1">
+                </div>
+                <div class="input-group">
+                    <label>Pulls Until Pity <button class="info-btn" onclick="showModal('pity')">?<span class="tooltip">How close you are to pity</span></button></label>
+                    <input type="number" id="multiple-pity" value="90" min="1" max="90">
+                </div>
+                <div class="input-group">
+                    <label>Boost Target Hero <button class="info-btn" onclick="showModal('boost-target')">?<span class="tooltip">Select which hero to boost</span></button></label>
+                    <select id="multiple-boost-target"></select>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="multiple-booster"> Use boosters from start <button class="info-btn" onclick="showModal('booster')">?<span class="tooltip">Enable boosted rates from the start</span></button></label>
+                </div>
+                <button class="btn" onclick="runMultipleSimulation()">Run Multiple Simulations</button>
+            </div>
+
+            <div id="probability-tab" class="tab-content">
+                <div class="input-group">
+                    <label>Target Hero Name <button class="info-btn" onclick="showModal('target-hero')">?<span class="tooltip">Which hero to track</span></button></label>
+                    <select id="prob-hero-select"></select>
+                </div>
+                <div class="input-group">
+                    <label>Maximum Draws <button class="info-btn" onclick="showModal('maxdraws')">?<span class="tooltip">Maximum number of pulls to simulate</span></button></label>
+                    <input type="number" id="prob-draws" value="100" min="1">
+                </div>
+                <div class="input-group">
+                    <label>Number of Runs (more = more accurate) <button class="info-btn" onclick="showModal('probruns')">?<span class="tooltip">More runs = more accurate results</span></button></label>
+                    <input type="number" id="prob-runs" value="100000" min="1000">
+                </div>
+                <div class="input-group">
+                    <label>Pulls Until Pity <button class="info-btn" onclick="showModal('pity')">?<span class="tooltip">How close you are to pity</span></button></label>
+                    <input type="number" id="prob-pity" value="90" min="1" max="90">
+                </div>
+                <div class="input-group">
+                    <label>Boost Target Hero <button class="info-btn" onclick="showModal('boost-target')">?<span class="tooltip">Select which hero to boost</span></button></label>
+                    <select id="prob-boost-target"></select>
+                </div>
+                <div class="checkbox-group">
+                    <label><input type="checkbox" id="prob-booster"> Use boosters from start <button class="info-btn" onclick="showModal('booster')">?<span class="tooltip">Enable boosted rates from the start</span></button></label>
+                </div>
+                <button class="btn" onclick="runProbabilityCheck()">Calculate Probabilities</button>
+            </div>
+
+            <div id="results" class="results"></div>
+        </div>
+
+        <div id="infoModal" class="modal" onclick="closeModalOutside(event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modalTitle">Information</h3>
+                    <button class="close-btn" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let nextHeroId = 2;
+
+        const infoContent = {
+            'draws': { title: 'Number of Draws', content: '<p><strong>What it does:</strong> Sets how many gacha pulls to simulate in a single run.</p><p><strong>How it works:</strong> The simulator will perform this many pulls and show you what you got, including all legendary drops by hero name.</p>' },
+            'booster': { title: 'Use Boosters From Start', content: '<p><strong>What it does:</strong> Changes the probability distribution when enabled.</p><p><strong>When DISABLED:</strong> Uses the base probabilities you set.</p><p><strong>When ENABLED:</strong> After getting 2 copies of the boosted hero, the boost target gets a 50% drop rate until you get them.</p>' },
+            'target': { title: 'Target Copies', content: '<p><strong>What it does:</strong> Sets how many copies of the target hero you want to obtain.</p><p><strong>How it works:</strong> The simulation will continue pulling until it gets this many copies, then record how many total draws it took.</p>' },
+            'target-hero': { title: 'Target Hero Name', content: '<p><strong>What it does:</strong> Selects which hero you want to track in the simulation.</p><p><strong>How it works:</strong> The simulator will count how many times this specific hero drops.</p>' },
+            'boost-target': { title: 'Boost Target Hero', content: '<p><strong>What it does:</strong> Selects which hero gets boosted rates.</p><p><strong>How it works:</strong> After obtaining 2 copies of this hero, if boosters are enabled, the boost target gets increased to 50% drop rate.</p><p><strong>Note:</strong> If the boost target is the same as the default boosted hero (first in list), the "Use boosters from start" option will be disabled.</p>' },
+            'runs': { title: 'Number of Runs', content: '<p><strong>What it does:</strong> Runs multiple independent simulations and shows average statistics.</p><p><strong>Recommended values:</strong></p><ul><li>100-500 runs: Quick estimate</li><li>1,000 runs: Good balance</li><li>10,000+ runs: Very accurate</li></ul>' },
+            'maxdraws': { title: 'Maximum Draws', content: '<p><strong>What it does:</strong> Sets a fixed number of draws for probability analysis.</p><p><strong>Use this to answer:</strong> "If I do exactly X pulls, what are my chances of getting Y copies of my target hero?"</p>' },
+            'probruns': { title: 'Number of Runs (Probability)', content: '<p><strong>What it does:</strong> How many times to simulate the draw sequence for probability calculation.</p><p><strong>Recommended:</strong> 100,000 runs for good accuracy.</p>' },
+            'dramatic': { title: 'Dramatic Mode', content: '<p><strong>What it does:</strong> Reveals your gacha pulls slowly in batches of 10 for dramatic tension!</p><p><strong>Note:</strong> This mode is slower but more exciting! Great for smaller pull counts (under 200).</p>' },
+            'pity': { title: 'Pulls Until Pity', content: '<p><strong>What it does:</strong> Sets how many pulls you are away from guaranteed pity.</p><p><strong>Examples:</strong></p><ul><li>90 pulls = Fresh start</li><li>50 pulls = 40 pulls into pity</li><li>1 pull = Next pull is guaranteed legendary</li></ul>' }
+        };
+
+        function initializeHeroes() {
+            const container = document.getElementById('hero-rows');
+            container.innerHTML = `
+                <div class="hero-row" id="hero-row-0">
+                    <input type="text" class="hero-name" placeholder="Hero Name" value="Boosted Hero" data-hero-id="0">
+                    <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0.5" data-hero-id="0">
+                    <button class="remove-btn" disabled>✕</button>
+                </div>
+                <div class="hero-row" id="hero-row-1">
+                    <input type="text" class="hero-name" placeholder="Hero Name" value="General Pool" data-hero-id="1">
+                    <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0.5" data-hero-id="1">
+                    <button class="remove-btn" onclick="removeHeroRow(1)">✕</button>
+                </div>
+            `;
+            
+            attachProbListeners();
+            validateProbabilities();
+            updateAllDropdowns();
+        }
+
+        function attachProbListeners() {
+            document.querySelectorAll('.hero-prob, .hero-name').forEach(input => {
+                input.removeEventListener('input', handleHeroChange);
+                input.addEventListener('input', handleHeroChange);
+            });
+        }
+
+        function handleHeroChange() {
+            validateProbabilities();
+            updateAllDropdowns();
+        }
+
+        function addHeroRow() {
+            const container = document.getElementById('hero-rows');
+            const heroId = nextHeroId++;
+            
+            const row = document.createElement('div');
+            row.className = 'hero-row';
+            row.id = `hero-row-${heroId}`;
+            row.innerHTML = `
+                <input type="text" class="hero-name" placeholder="Hero Name" value="Hero ${heroId}" data-hero-id="${heroId}">
+                <input type="number" class="hero-prob" placeholder="Probability" min="0" max="1" step="0.001" value="0" data-hero-id="${heroId}">
+                <button class="remove-btn" onclick="removeHeroRow(${heroId})">✕</button>
+            `;
+            
+            container.appendChild(row);
+            attachProbListeners();
+            validateProbabilities();
+            updateAllDropdowns();
+        }
+
+        function removeHeroRow(heroId) {
+            const row = document.getElementById(`hero-row-${heroId}`);
+            if (row) {
+                row.remove();
+                validateProbabilities();
+                updateAllDropdowns();
+            }
+        }
+
+        function validateProbabilities() {
+            const probInputs = document.querySelectorAll('.hero-prob');
+            let total = 0;
+            probInputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            
+            const indicator = document.getElementById('prob-indicator');
+            const diff = Math.abs(1 - total);
+            
+            if (diff < 0.001) {
+                indicator.textContent = '✓ Probabilities sum to 1.0';
+                indicator.className = 'prob-indicator valid';
+                return true;
+            } else {
+                indicator.textContent = `✗ Probabilities sum to ${total.toFixed(3)} (must equal 1.0)`;
+                indicator.className = 'prob-indicator invalid';
+                return false;
+            }
+        }
+
+        function getHeroes() {
+            const rows = document.querySelectorAll('.hero-row');
+            const heroList = [];
+            
+            rows.forEach(row => {
+                const name = row.querySelector('.hero-name').value.trim();
+                const prob = parseFloat(row.querySelector('.hero-prob').value) || 0;
+                const heroId = row.querySelector('.hero-name').dataset.heroId;
+                if (name && prob > 0) {
+                    heroList.push({ name, prob, id: heroId });
+                }
+            });
+            
+            return heroList;
+        }
+
+        function updateAllDropdowns() {
+            updateBoostDropdown('single-boost-target');
+            updateBoostDropdown('multiple-boost-target');
+            updateBoostDropdown('prob-boost-target');
+            updateHeroDropdown('target-hero-select');
+            updateHeroDropdown('prob-hero-select');
+            checkBoosterDisable();
+        }
+
+        function updateBoostDropdown(selectId) {
+            const select = document.getElementById(selectId);
+            const heroes = getHeroes();
+            const currentValue = select.value;
+            
+            select.innerHTML = '<option value="">None</option>';
+            heroes.forEach((hero, idx) => {
+                const option = document.createElement('option');
+                option.value = hero.id;
+                option.textContent = hero.name;
+                select.appendChild(option);
+            });
+            
+            if (currentValue) select.value = currentValue;
+        }
+
+        function updateHeroDropdown(selectId) {
+            const select = document.getElementById(selectId);
+            const heroes = getHeroes();
+            const currentValue = select.value;
+            
+            select.innerHTML = '';
+            heroes.forEach((hero) => {
+                const option = document.createElement('option');
+                option.value = hero.id;
+                option.textContent = hero.name;
+                select.appendChild(option);
+            });
+            
+            if (currentValue) select.value = currentValue;
+            else if (heroes.length > 0) select.value = heroes[0].id;
+        }
+
+        function checkBoosterDisable() {
+            const boostSelects = ['single-boost-target', 'multiple-boost-target', 'prob-boost-target'];
+            const boosterCheckboxes = ['single-booster', 'multiple-booster', 'prob-booster'];
+            
+            boostSelects.forEach((selectId, idx) => {
+                const select = document.getElementById(selectId);
+                const checkbox = document.getElementById(boosterCheckboxes[idx]);
+                
+                if (select.value === '0') {
+                    checkbox.disabled = true;
+                    checkbox.checked = false;
+                } else {
+                    checkbox.disabled = false;
+                }
+            });
+        }
+
+        function showModal(type) {
+            const modal = document.getElementById('infoModal');
+            const title = document.getElementById('modalTitle');
+            const body = document.getElementById('modalBody');
+            if (infoContent[type]) {
+                title.textContent = infoContent[type].title;
+                body.innerHTML = infoContent[type].content;
+                modal.classList.add('show');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').classList.remove('show');
+        }
+
+        function closeModalOutside(event) {
+            if (event.target.id === 'infoModal') closeModal();
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.getElementById('results').classList.remove('show');
+        }
+
+        function simulateSingle(maxDraws, heroes, boostTargetId, useBoosters, initialPity = 0) {
+            if (!validateProbabilities()) {
+                alert('Hero probabilities must sum to 1.0!');
+                return null;
+            }
+
+            let totalDraws = 0, pity = initialPity;
+            const heroCounts = {};
+            heroes.forEach(h => heroCounts[h.id] = 0);
+            let boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+            const results = [];
+            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+
+            while (totalDraws < maxDraws) {
+                totalDraws++; pity++;
+                const gotLegendary = Math.random() < 0.01 || pity >= 90;
+                
+                if (gotLegendary) {
+                    pity = 0;
+                    let selectedHero;
+
+                    if (heroIsBoosted && boostTargetHero) {
+                        boostersUsed++;
+                        if (Math.random() < 0.5) {
+                            selectedHero = boostTargetHero;
+                        } else {
+                            const rand = Math.random();
+                            let cumProb = 0;
+                            for (const hero of heroes) {
+                                if (hero.id === boostTargetId) continue;
+                                cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                if (rand < cumProb) {
+                                    selectedHero = hero;
+                                    break;
+                                }
+                            }
+                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                        }
+                    } else {
+                        const rand = Math.random();
+                        let cumProb = 0;
+                        for (const hero of heroes) {
+                            cumProb += hero.prob;
+                            if (rand < cumProb) {
+                                selectedHero = hero;
+                                break;
+                            }
+                        }
+                        if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                    }
+
+                    heroCounts[selectedHero.id]++;
+                    results.push({ hero: selectedHero.name, draws: totalDraws, id: selectedHero.id });
+
+                    if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
+                        boostedCount++;
+                        if (boostedCount === 2) heroIsBoosted = true;
+                    }
+                }
+            }
+
+            return { results, totalDraws, heroCounts, boostersUsed };
+        }
+
+        function simulateMultiple(targetHeroId, targetCopies, numRuns, heroes, boostTargetId, useBoosters, initialPity = 0) {
+            if (!validateProbabilities()) {
+                alert('Hero probabilities must sum to 1.0!');
+                return null;
+            }
+
+            const results = [];
+            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+
+            for (let run = 0; run < numRuns; run++) {
+                let totalDraws = 0, pity = initialPity, targetCount = 0, boostedCount = 0, heroIsBoosted = false;
+
+                while (targetCount < targetCopies) {
+                    totalDraws++; pity++;
+                    const gotLegendary = Math.random() < 0.01 || pity >= 90;
+                    
+                    if (gotLegendary) {
+                        pity = 0;
+                        let selectedHero;
+
+                        if (heroIsBoosted && boostTargetHero) {
+                            if (Math.random() < 0.5) {
+                                selectedHero = boostTargetHero;
+                            } else {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    if (hero.id === boostTargetId) continue;
+                                    cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                            }
+                        } else {
+                            const rand = Math.random();
+                            let cumProb = 0;
+                            for (const hero of heroes) {
+                                cumProb += hero.prob;
+                                if (rand < cumProb) {
+                                    selectedHero = hero;
+                                    break;
+                                }
+                            }
+                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                        }
+
+                        if (selectedHero.id === targetHeroId) targetCount++;
+                        
+                        if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
+                            boostedCount++;
+                            if (boostedCount === 2) heroIsBoosted = true;
+                        }
+                    }
+                }
+                results.push(totalDraws);
+            }
+
+            results.sort((a, b) => a - b);
+            return { 
+                avg: results.reduce((a, b) => a + b, 0) / results.length, 
+                median: results[Math.floor(results.length / 2)], 
+                min: results[0], 
+                max: results[results.length - 1] 
+            };
+        }
+
+        function probabilityCheck(targetHeroId, maxDraws, numRuns, heroes, boostTargetId, useBoosters, initialPity = 0) {
+            if (!validateProbabilities()) {
+                alert('Hero probabilities must sum to 1.0!');
+                return null;
+            }
+
+            const heroCounts = {};
+            let totalBoosters = 0, totalTarget = 0;
+            const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+
+            for (let run = 0; run < numRuns; run++) {
+                let totalDraws = 0, pity = initialPity, targetCount = 0, boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+
+                while (totalDraws < maxDraws) {
+                    totalDraws++; pity++;
+                    const gotLegendary = Math.random() < 0.01 || pity >= 90;
+                    
+                    if (gotLegendary) {
+                        pity = 0;
+                        let selectedHero;
+
+                        if (heroIsBoosted && boostTargetHero) {
+                            boostersUsed++;
+                            if (Math.random() < 0.5) {
+                                selectedHero = boostTargetHero;
+                            } else {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    if (hero.id === boostTargetId) continue;
+                                    cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                            }
+                        } else {
+                            const rand = Math.random();
+                            let cumProb = 0;
+                            for (const hero of heroes) {
+                                cumProb += hero.prob;
+                                if (rand < cumProb) {
+                                    selectedHero = hero;
+                                    break;
+                                }
+                            }
+                            if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                        }
+
+                        if (selectedHero.id === targetHeroId) targetCount++;
+                        
+                        if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
+                            boostedCount++;
+                            if (boostedCount === 2) heroIsBoosted = true;
+                        }
+                    }
+                }
+
+                heroCounts[targetCount] = (heroCounts[targetCount] || 0) + 1;
+                totalBoosters += boostersUsed;
+                totalTarget += targetCount;
+            }
+
+            return { heroCounts, totalBoosters, totalTarget };
+        }
+
+        function runSingleSimulation() {
+            const draws = parseInt(document.getElementById('single-draws').value);
+            const boostTargetId = document.getElementById('single-boost-target').value;
+            const useBoosters = document.getElementById('single-booster').checked;
+            const dramaticMode = document.getElementById('dramatic-mode').checked;
+            const pityValue = parseInt(document.getElementById('single-pity').value);
+            const initialPity = 90 - Math.max(1, Math.min(90, pityValue));
+            const resultsDiv = document.getElementById('results');
+            const heroes = getHeroes();
+
+            if (heroes.length === 0) {
+                alert('Please add at least one hero!');
+                return;
+            }
+
+            if (dramaticMode) {
+                runDramaticSimulation(draws, heroes, boostTargetId, useBoosters, initialPity);
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Running simulation...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const simResult = simulateSingle(draws, heroes, boostTargetId, useBoosters, initialPity);
+                if (!simResult) return;
+
+                const { results, totalDraws, heroCounts, boostersUsed } = simResult;
+
+                let html = '<h3>📊 Simulation Results</h3><div class="stats">';
+                html += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
+                
+                heroes.forEach(hero => {
+                    html += `<div class="stat-card"><div class="label">${hero.name}</div><div class="value">${heroCounts[hero.id] || 0}</div></div>`;
+                });
+                
+                html += `<div class="stat-card"><div class="label">Boosters Used</div><div class="value">${boostersUsed}</div></div></div>`;
+                html += '<h3 style="margin-top: 30px;">Pull History</h3>';
+                
+                let boostedLegendaryCount = 0;
+                results.forEach((r, i) => {
+                    const isBoosted = r.id === boostTargetId;
+                    if (isBoosted) boostedLegendaryCount++;
+                    const boostMsg = (isBoosted && boostedLegendaryCount === 2) ? ' (Hero now boosted!)' : '';
+                    const className = isBoosted ? 'boosted' : '';
+                    html += `<div class="result-item ${className}">#${i + 1}: ${r.hero}${boostMsg} - Total draws: ${r.draws}</div>`;
+                });
+
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+
+        function runDramaticSimulation(maxDraws, heroes, boostTargetId, useBoosters, initialPity = 0) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<div class="loading">Preparing dramatic reveal...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                let totalDraws = 0, pity = initialPity;
+                const heroCounts = {};
+                heroes.forEach(h => heroCounts[h.id] = 0);
+                let boostedCount = 0, boostersUsed = 0, heroIsBoosted = false;
+                const allPulls = [];
+                const boostTargetHero = heroes.find(h => h.id === boostTargetId);
+
+                while (totalDraws < maxDraws) {
+                    const batchPulls = [], batchSize = Math.min(10, maxDraws - totalDraws);
+
+                    for (let i = 0; i < batchSize; i++) {
+                        totalDraws++; pity++;
+                        const gotLegendary = Math.random() < 0.01 || pity >= 90;
+                        
+                        if (gotLegendary) {
+                            pity = 0;
+                            let selectedHero;
+
+                            if (heroIsBoosted && boostTargetHero) {
+                                boostersUsed++;
+                                if (Math.random() < 0.5) {
+                                    selectedHero = boostTargetHero;
+                                } else {
+                                    const rand = Math.random();
+                                    let cumProb = 0;
+                                    for (const hero of heroes) {
+                                        if (hero.id === boostTargetId) continue;
+                                        cumProb += hero.prob / (1 - boostTargetHero.prob);
+                                        if (rand < cumProb) {
+                                            selectedHero = hero;
+                                            break;
+                                        }
+                                    }
+                                    if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                                }
+                            } else {
+                                const rand = Math.random();
+                                let cumProb = 0;
+                                for (const hero of heroes) {
+                                    cumProb += hero.prob;
+                                    if (rand < cumProb) {
+                                        selectedHero = hero;
+                                        break;
+                                    }
+                                }
+                                if (!selectedHero) selectedHero = heroes[heroes.length - 1];
+                            }
+
+                            heroCounts[selectedHero.id]++;
+                            batchPulls.push({ pull: totalDraws, hero: selectedHero.name, id: selectedHero.id });
+
+                            if (useBoosters && boostTargetHero && selectedHero.id === boostTargetId) {
+                                boostedCount++;
+                                if (boostedCount === 2) heroIsBoosted = true;
+                            }
+                        }
+                    }
+
+                    allPulls.push({ start: totalDraws - batchSize + 1, end: totalDraws, legendaries: batchPulls });
+                }
+
+                let html = '<h3>🎲 Dramatic Reveal</h3><div class="dramatic-progress"><div class="progress-text">Revealing pulls...</div><div class="progress-bar-container"><div class="progress-bar-fill" id="dramaticProgress">0%</div></div></div><div class="dramatic-pulls" id="dramaticPulls"></div>';
+                resultsDiv.innerHTML = html;
+
+                let currentBatch = 0;
+                const progressBar = document.getElementById('dramaticProgress'), pullsDiv = document.getElementById('dramaticPulls');
+
+                const revealInterval = setInterval(() => {
+                    if (currentBatch >= allPulls.length) {
+                        clearInterval(revealInterval);
+                        
+                        let statsHtml = '<div class="stats" style="margin-top: 30px;">';
+                        statsHtml += `<div class="stat-card"><div class="label">Total Draws</div><div class="value">${totalDraws}</div></div>`;
+                        heroes.forEach(hero => {
+                            statsHtml += `<div class="stat-card"><div class="label">${hero.name}</div><div class="value">${heroCounts[hero.id] || 0}</div></div>`;
+                        });
+                        statsHtml += `<div class="stat-card"><div class="label">Boosters Used</div><div class="value">${boostersUsed}</div></div></div>`;
+                        pullsDiv.insertAdjacentHTML('beforeend', statsHtml);
+                        return;
+                    }
+
+                    const batch = allPulls[currentBatch];
+                    const progress = ((currentBatch + 1) / allPulls.length * 100).toFixed(0);
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = progress + '%';
+
+                    let batchHtml = '';
+                    if (batch.legendaries.length === 0) batchHtml = `<div class="pull-batch">Pulls ${batch.start}-${batch.end}: Nothing...</div>`;
+                    else {
+                        batch.legendaries.forEach(leg => {
+                            const className = leg.id === boostTargetId ? 'pull-batch legendary' : 'pull-batch';
+                            batchHtml += `<div class="${className}">Pull #${leg.pull}: <span class="legendary-text">${leg.hero}</span></div>`;
+                        });
+                    }
+
+                    pullsDiv.insertAdjacentHTML('afterbegin', batchHtml);
+                    currentBatch++;
+                }, 1000);
+            }, 500);
+        }
+
+        function runMultipleSimulation() {
+            const targetHeroId = document.getElementById('target-hero-select').value;
+            const targetCopies = parseInt(document.getElementById('target-copies').value);
+            const numRuns = parseInt(document.getElementById('num-runs').value);
+            const boostTargetId = document.getElementById('multiple-boost-target').value;
+            const useBoosters = document.getElementById('multiple-booster').checked;
+            const pityValue = parseInt(document.getElementById('multiple-pity').value);
+            const initialPity = 90 - Math.max(1, Math.min(90, pityValue));
+            const resultsDiv = document.getElementById('results');
+            const heroes = getHeroes();
+
+            if (heroes.length === 0) {
+                alert('Please add at least one hero!');
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Running simulations...</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const simResult = simulateMultiple(targetHeroId, targetCopies, numRuns, heroes, boostTargetId, useBoosters, initialPity);
+                if (!simResult) return;
+
+                const { avg, median, min, max } = simResult;
+                const targetHero = heroes.find(h => h.id === targetHeroId);
+
+                let html = '<h3>📊 Multiple Run Results</h3>';
+                html += `<p class="results-summary">Simulated ${numRuns.toLocaleString()} runs to get ${targetCopies} ${targetHero.name} cop${targetCopies > 1 ? 'ies' : 'y'}</p><div class="stats">`;
+                html += `<div class="stat-card"><div class="label">Average Draws</div><div class="value">${avg.toFixed(2)}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Median</div><div class="value">${median}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Minimum</div><div class="value">${min}</div></div>`;
+                html += `<div class="stat-card"><div class="label">Maximum</div><div class="value">${max}</div></div></div>`;
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+
+        function runProbabilityCheck() {
+            const targetHeroId = document.getElementById('prob-hero-select').value;
+            const maxDraws = parseInt(document.getElementById('prob-draws').value);
+            const numRuns = parseInt(document.getElementById('prob-runs').value);
+            const boostTargetId = document.getElementById('prob-boost-target').value;
+            const useBoosters = document.getElementById('prob-booster').checked;
+            const pityValue = parseInt(document.getElementById('prob-pity').value);
+            const initialPity = 90 - Math.max(1, Math.min(90, pityValue));
+            const resultsDiv = document.getElementById('results');
+            const heroes = getHeroes();
+
+            if (heroes.length === 0) {
+                alert('Please add at least one hero!');
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div>Calculating probabilities... This may take a moment.</div>';
+            resultsDiv.classList.add('show');
+
+            setTimeout(() => {
+                const simResult = probabilityCheck(targetHeroId, maxDraws, numRuns, heroes, boostTargetId, useBoosters, initialPity);
+                if (!simResult) return;
+
+                const { heroCounts, totalBoosters, totalTarget } = simResult;
+                const targetHero = heroes.find(h => h.id === targetHeroId);
+                const avgTarget = totalTarget / numRuns, avgBoosters = totalBoosters / numRuns;
+
+                const maxCountValue = Math.max(...Object.values(heroCounts));
+                const sortedKeys = Object.keys(heroCounts).map(Number).sort((a, b) => a - b);
+
+                let atLeastOne = 0;
+                for (let i = 1; i <= Math.max(...sortedKeys); i++) atLeastOne += heroCounts[i] || 0;
+
+                let html = '<h3>📊 Probability Analysis</h3>';
+                html += `<p class="results-summary">Results from ${numRuns.toLocaleString()} simulations with ${maxDraws} draws each for ${targetHero.name}</p><div class="stats">`;
+                html += `<div class="stat-card"><div class="label">Average ${targetHero.name}</div><div class="value">${avgTarget.toFixed(2)}</div></div>`;
+                html += `<div class="stat-card"><div class="label">At Least 1 ${targetHero.name}</div><div class="value">${((atLeastOne / numRuns) * 100).toFixed(2)}%</div></div>`;
+                html += `<div class="stat-card"><div class="label">Avg Boosters Used</div><div class="value">${avgBoosters.toFixed(2)}</div></div></div>`;
+                html += `<div class="bar-graph"><h3>${targetHero.name} Distribution</h3>`;
+                
+                sortedKeys.forEach(count => {
+                    const prob = (heroCounts[count] / numRuns) * 100, barWidth = (heroCounts[count] / maxCountValue) * 100;
+                    html += `<div class="bar-item"><div class="bar-label"><span>${count} ${targetHero.name}</span><span>${prob.toFixed(3)}%</span></div><div class="bar-container"><div class="bar-fill" style="width: ${barWidth}%">${prob.toFixed(2)}%</div></div></div>`;
+                });
+                
+                html += '</div>';
+                resultsDiv.innerHTML = html;
+            }, 100);
+        }
+
+        // Event listeners for boost target selection
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeHeroes();
+            
+            ['single-boost-target', 'multiple-boost-target', 'prob-boost-target'].forEach(id => {
+                document.getElementById(id).addEventListener('change', checkBoosterDisable);
+            });
+        });
+    </script>
+</body>
+</html>
